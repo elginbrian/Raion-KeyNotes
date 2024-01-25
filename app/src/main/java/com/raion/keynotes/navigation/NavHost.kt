@@ -5,11 +5,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.raion.keynotes.screen.HomeScreen
-import com.raion.keynotes.screen.RaionViewModel
+import com.raion.keynotes.screen.RaionAPIViewModel
 
 @Composable
 fun NavHost(
-    viewModel: RaionViewModel
+    viewModel: RaionAPIViewModel
 ){
     val navController = rememberNavController()
     //val note = viewModel.data.
