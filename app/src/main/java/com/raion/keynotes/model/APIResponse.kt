@@ -2,12 +2,13 @@ package com.raion.keynotes.model
 
 import com.google.gson.annotations.SerializedName
 
+// GET NOTE
 data class getNoteResponse(
     @SerializedName("error") val error: Boolean,
     @SerializedName("status") val status: String,
     @SerializedName("message") val message: String,
     @SerializedName("count") val count: Int,
-    @SerializedName("data") val data: List<noteItem>?
+    @SerializedName("data") val data: List<noteItem>
 )
 
 data class noteItem(
@@ -18,9 +19,11 @@ data class noteItem(
     @SerializedName("updatedAt") val updatedAt: String
 )
 
-data class getUserResponse(
-    var error: Boolean,
-    var status: String,
-    var messege: String,
-    var data: String // need fix
+
+// POST NOTE
+data class postNoteResponse(
+    @SerializedName("error") val error: Boolean,
+    @SerializedName("status") val status: String,
+    @SerializedName("message") val message: String,
+    @SerializedName("data") val data: String
 )
