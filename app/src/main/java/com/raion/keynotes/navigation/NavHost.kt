@@ -21,7 +21,8 @@ fun NavHost(
     ) {
         composable(NavEnum.HomeScreen.name){
             HomeScreen(
-                viewModel = viewModel
+                viewModel = viewModel,
+                addNote = { viewModel.addNote(it.first, it.second)}
             )
         }
     }

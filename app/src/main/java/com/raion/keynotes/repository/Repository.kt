@@ -3,21 +3,25 @@ package com.raion.keynotes.repository
 import android.util.Log
 import com.raion.keynotes.data.DataExceptionHandling
 import com.raion.keynotes.data.NoteDAO
+import com.raion.keynotes.model.DeleteNoteResponse
 import com.raion.keynotes.model.NoteClass
-import com.raion.keynotes.model.getNoteResponse
-import com.raion.keynotes.model.getUserDetailResponse
-import com.raion.keynotes.model.postNoteResponse
+import com.raion.keynotes.model.PostNoteRequest
+import com.raion.keynotes.model.GetNoteResponse
+import com.raion.keynotes.model.GetUserDetailResponse
+import com.raion.keynotes.model.PostNoteResponse
 import com.raion.keynotes.network.RaionAPI
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
-    private val getNoteExceptionHandling       = DataExceptionHandling<getNoteResponse, Boolean, Exception>()
-    private val getUserDetailExceptionHandling = DataExceptionHandling<getUserDetailResponse, Boolean, Exception>()
+    private val getNoteExceptionHandling       = DataExceptionHandling<GetNoteResponse, Boolean, Exception>()
+    private val getUserDetailExceptionHandling = DataExceptionHandling<GetUserDetailResponse, Boolean, Exception>()
 
-    private val postNoteExceptionHandling      = DataExceptionHandling<postNoteResponse, Boolean, Exception>()
+    private val postNoteExceptionHandling      = DataExceptionHandling<PostNoteResponse, Boolean, Exception>()
 
-    suspend fun getNoteResponse(): DataExceptionHandling<getNoteResponse, Boolean, Exception>{
+    private val deleteNoteExceptionHandling    = DataExceptionHandling<DeleteNoteResponse, Boolean, Exception>()
+
+    suspend fun getNoteResponse(): DataExceptionHandling<GetNoteResponse, Boolean, Exception>{
         try {
             getNoteExceptionHandling.loading = true
             getNoteExceptionHandling.data    = api.getNote()
@@ -33,7 +37,7 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
         return getNoteExceptionHandling
     }
 
-    suspend fun getUserDetailResponse(): DataExceptionHandling<getUserDetailResponse, Boolean, Exception>{
+    suspend fun getUserDetailResponse(): DataExceptionHandling<GetUserDetailResponse, Boolean, Exception>{
         try {
             getUserDetailExceptionHandling.loading = true
             getUserDetailExceptionHandling.data    = api.getUserDetail()
@@ -49,22 +53,40 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
         return getUserDetailExceptionHandling
     }
 
-    suspend fun postNoteResponse(): DataExceptionHandling<postNoteResponse, Boolean, Exception>{
-        try {
-            postNoteExceptionHandling.loading = true
-            postNoteExceptionHandling.data    = api.postNote(title = "Lorem Ipsum", description = "Lorem Ipsum")
+    suspend fun postNoteRequest(title: String, description: String): DataExceptionHandling<PostNoteResponse, Boolean, Exception>{
+        //val noteRequest = postNoteRequest(title, description)
+        val noteRequest = PostNoteRequest(title, description)
+        try{
+            val response = api.postNote(noteRequest)
 
-            if(postNoteExceptionHandling.data.toString().isNotEmpty()) {
-                postNoteExceptionHandling.loading = false
+            if(!response.error){
+                Log.d("Repo sucsess", "Response: ${response.data}")
+            } else {
+                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
             }
-
-        } catch (exception: Exception){
-            postNoteExceptionHandling.e = exception
-            Log.d("Repo exception", "postNoteResponse: ${postNoteExceptionHandling.e!!.localizedMessage}")
+        } catch (e: Exception){
+            Log.d("Repo exception", "${e.printStackTrace()}")
         }
         return postNoteExceptionHandling
     }
+
+    suspend fun deleteNoteRequest(noteId: String): DataExceptionHandling<DeleteNoteResponse, Boolean, Exception>{
+        try {
+            val response = api.deleteNote(noteId)
+
+            if(!response.error){
+                Log.d("Repo sucsess", "Response: ${response.data}")
+            } else {
+                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+            }
+        } catch (e: Exception){
+            Log.d("Repo exception", "${e.printStackTrace()}")
+        }
+        return deleteNoteExceptionHandling
+    }
 }
+
+
 
 class NoteDAORepository @Inject constructor(private val NoteDAO: NoteDAO){
     suspend fun addNote(NoteClass: NoteClass) = NoteDAO.insert(NoteClass)

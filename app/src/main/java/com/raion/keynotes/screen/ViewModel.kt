@@ -7,9 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.raion.keynotes.data.DataExceptionHandling
 import com.raion.keynotes.data.NoteDAO
 import com.raion.keynotes.model.NoteClass
-import com.raion.keynotes.model.getNoteResponse
-import com.raion.keynotes.model.getUserDetailResponse
-import com.raion.keynotes.model.postNoteResponse
+import com.raion.keynotes.model.GetNoteResponse
+import com.raion.keynotes.model.GetUserDetailResponse
+import com.raion.keynotes.model.PostNoteResponse
 import com.raion.keynotes.repository.NoteDAORepository
 import com.raion.keynotes.repository.RaionAPIRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepository): ViewModel(){
-    val getNote: MutableState<DataExceptionHandling<getNoteResponse, Boolean, Exception>> =
+    val getNote: MutableState<DataExceptionHandling<GetNoteResponse, Boolean, Exception>> =
         mutableStateOf(
             DataExceptionHandling(null, true, Exception(""))
         )
@@ -41,7 +41,7 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
         }
 
 
-    val getUserDetail: MutableState<DataExceptionHandling<getUserDetailResponse, Boolean, Exception>> =
+    val getUserDetail: MutableState<DataExceptionHandling<GetUserDetailResponse, Boolean, Exception>> =
         mutableStateOf(
             DataExceptionHandling(null, true, Exception(""))
         )
@@ -60,7 +60,25 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
     }
 
 
-    val postNote: MutableState<DataExceptionHandling<postNoteResponse, Boolean, Exception>> =
+    //val postNote: MutableState<DataExceptionHandling<postNoteResponse, Boolean, Exception>> =
+    //    mutableStateOf(
+    //        DataExceptionHandling(null, true, Exception(""))
+    //    )
+    //    init {
+    //        postNote()
+    //    }
+    //    private fun postNote(){
+    //       viewModelScope.launch {
+    //            postNote.value.loading = true
+    //            postNote.value = repository.postNoteResponse()
+
+    //            if(getNote.value.data.toString().isNotEmpty()){
+    //                postNote.value.loading = false
+    //            }
+    //        }
+    //    }
+
+    val postNote: MutableState<DataExceptionHandling<PostNoteResponse, Boolean, Exception>> =
         mutableStateOf(
             DataExceptionHandling(null, true, Exception(""))
         )
@@ -68,15 +86,17 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
             postNote()
         }
         private fun postNote(){
-            viewModelScope.launch {
+           viewModelScope.launch {
                 postNote.value.loading = true
-                postNote.value = repository.postNoteResponse()
+                //postNote.value = repository.postNoteRequest()
 
                 if(getNote.value.data.toString().isNotEmpty()){
                     postNote.value.loading = false
                 }
             }
         }
+
+    fun addNote(title: String, description: String) = viewModelScope.launch { repository.postNoteRequest(title, description) }
 }
 
 @HiltViewModel
