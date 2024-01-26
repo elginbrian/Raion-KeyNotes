@@ -1,7 +1,6 @@
 package com.raion.keynotes.network
 
 import com.raion.keynotes.model.DeleteNoteResponse
-import com.raion.keynotes.model.GetNoteDetailResponse
 import com.raion.keynotes.model.GetNoteResponse
 import com.raion.keynotes.model.GetUserDetailResponse
 import com.raion.keynotes.model.PostNoteRequest
@@ -19,10 +18,6 @@ interface RaionAPI {
     @GET("note")
     @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
     suspend fun getNote(): GetNoteResponse
-
-    @GET("note/{noteId}")
-    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
-    suspend fun getNoteDetail(@Path("noteId") noteId: String): GetNoteDetailResponse
 
     @GET("user")
     @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")

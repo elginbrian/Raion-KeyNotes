@@ -40,7 +40,7 @@ fun Notes(
     viewModel: RaionAPIViewModel,
 ){
     val notes = viewModel.getNote.value.data
-    var noteID: String = ""
+    val note0Id: String
 
     if(viewModel.getNote.value.loading == true){
         CircularProgressIndicator()
@@ -74,7 +74,8 @@ fun UserDetail(
 
 @Composable
 fun NoteCard(
-    noteItem: NoteItem
+    noteItem: NoteItem,
+    trigger: (String) -> Unit
 ){
     Card(
         modifier = Modifier
@@ -85,7 +86,8 @@ fun NoteCard(
                 end = 10.dp,
                 top = 15.dp,
                 bottom = 5.dp
-            ),
+            )
+            .clickable { trigger(noteItem.noteId) },
         shape = RoundedCornerShape(15.dp),
         elevation = CardDefaults.cardElevation(10.dp),
         //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.inversePrimary)

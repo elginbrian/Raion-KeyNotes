@@ -17,9 +17,9 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
     private val getNoteExceptionHandling       = DataExceptionHandling<GetNoteResponse, Boolean, Exception>()
     private val getUserDetailExceptionHandling = DataExceptionHandling<GetUserDetailResponse, Boolean, Exception>()
 
-    private val postNoteExceptionHandling      = DataExceptionHandling<PostNoteResponse, Boolean, Exception>()
+    //private val postNoteExceptionHandling      = DataExceptionHandling<PostNoteResponse, Boolean, Exception>()
 
-    private val deleteNoteExceptionHandling    = DataExceptionHandling<DeleteNoteResponse, Boolean, Exception>()
+    //private val deleteNoteExceptionHandling    = DataExceptionHandling<DeleteNoteResponse, Boolean, Exception>()
 
     suspend fun getNoteResponse(): DataExceptionHandling<GetNoteResponse, Boolean, Exception>{
         try {
@@ -53,8 +53,7 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
         return getUserDetailExceptionHandling
     }
 
-    suspend fun postNoteRequest(title: String, description: String): DataExceptionHandling<PostNoteResponse, Boolean, Exception>{
-        //val noteRequest = postNoteRequest(title, description)
+    suspend fun postNoteRequest(title: String, description: String){
         val noteRequest = PostNoteRequest(title, description)
         try{
             val response = api.postNote(noteRequest)
@@ -67,10 +66,9 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
         } catch (e: Exception){
             Log.d("Repo exception", "${e.printStackTrace()}")
         }
-        return postNoteExceptionHandling
     }
 
-    suspend fun deleteNoteRequest(noteId: String): DataExceptionHandling<DeleteNoteResponse, Boolean, Exception>{
+    suspend fun deleteNoteRequest(noteId: String){
         try {
             val response = api.deleteNote(noteId)
 
@@ -82,7 +80,6 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
         } catch (e: Exception){
             Log.d("Repo exception", "${e.printStackTrace()}")
         }
-        return deleteNoteExceptionHandling
     }
 }
 

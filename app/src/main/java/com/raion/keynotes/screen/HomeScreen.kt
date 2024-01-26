@@ -55,7 +55,8 @@ import com.raion.keynotes.navigation.NavEnum
 fun HomeScreen(
     viewModel: RaionAPIViewModel,
     navController: NavController,
-    addNote: (Pair<String, String>) -> Unit
+    addNote: (Pair<String, String>) -> Unit,
+    deleteNote: (String) -> Unit
 ){
     // For testing
     Notes(viewModel = viewModel)
@@ -202,14 +203,19 @@ fun HomeScreen(
                                             newNoteTitle.value = ""
                                             newNoteDescription.value = ""
                                             displayForm.value = !displayForm.value
-                                            navController.navigate(route = NavEnum.HomeScreen.name)
+
                                         }
                                     }
 
                                 } else {
                                     LazyColumn(modifier = Modifier.fillMaxSize()){
                                         items(noteList){noteItem ->
-                                            NoteCard(noteItem = noteItem)
+                                            NoteCard(noteItem = noteItem){noteId ->
+                                                if(noteId.isNotEmpty()){
+                                                    //deleteNote(noteItem.noteId)
+                                                    navController.navigate(route = NavEnum.NoteScreen.name+"/$noteId")
+                                                }
+                                            }
                                         }
                                     }
                                 }
