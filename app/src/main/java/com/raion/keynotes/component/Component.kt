@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.NoteItem
 import com.raion.keynotes.screen.RaionAPIViewModel
 
@@ -109,10 +110,66 @@ fun NoteCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = noteItem.title, fontSize = 18.sp ,fontWeight = FontWeight(500), color = Color.White)
+                    Text(text = noteItem.title, fontSize = 18.sp ,fontWeight = FontWeight(500), color = Color.White, maxLines = 1)
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = noteItem.updatedAt, fontSize = 12.sp, color = Color.White)
+                        Text(text = noteItem.updatedAt, fontSize = 12.sp, color = Color.White, maxLines = 1)
+                    }
+                }
+            }
+
+            Column(modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize(),
+                //verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = noteItem.description, fontSize = 12.sp, maxLines = 8, textAlign = TextAlign.Justify, lineHeight = 13.sp)
+            }
+        }
+    }
+}
+
+@Composable
+fun DownloadedNoteCard(
+    noteItem: NoteClass,
+    trigger: (String) -> Unit
+){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+            .padding(
+                start = 10.dp,
+                end = 10.dp,
+                top = 15.dp,
+                bottom = 5.dp
+            )
+            .clickable { trigger(noteItem.noteId) },
+        shape = RoundedCornerShape(15.dp),
+        elevation = CardDefaults.cardElevation(10.dp),
+        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.inversePrimary)
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
+                colors = CardDefaults.cardColors(Color(30,30,30, 255))
+            ) {
+                Row(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 15.dp, end = 15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = noteItem.title, fontSize = 18.sp ,fontWeight = FontWeight(500), color = Color.White, maxLines = 1)
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = noteItem.updatedAt, fontSize = 12.sp, color = Color.White, maxLines = 1)
                     }
                 }
             }

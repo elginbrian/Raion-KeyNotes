@@ -2,7 +2,9 @@ package com.raion.keynotes.navigation
 
 enum class NavEnum {
     HomeScreen,
-    NoteScreen
+    NoteScreen,
+    ProfileScreen,
+    DownloadScreen
     ;
 
     companion object{
@@ -10,6 +12,8 @@ enum class NavEnum {
                 = when(route?.substringBefore("/")){
             HomeScreen.name -> HomeScreen
             NoteScreen.name -> NoteScreen
+            ProfileScreen.name -> ProfileScreen
+            DownloadScreen.name -> DownloadScreen
             null -> HomeScreen
             else -> throw IllegalArgumentException("Route $route is not recognized")
         }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.raion.keynotes.navigation.NavHost
+import com.raion.keynotes.screen.NoteDAOViewModel
 import com.raion.keynotes.screen.RaionAPIViewModel
 import com.raion.keynotes.ui.theme.KeyNotesTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,8 +28,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val viewModel: RaionAPIViewModel by viewModels()
+                    val viewModel2: NoteDAOViewModel by viewModels()
                     KeyNotes(content = {
-                        NavHost(viewModel = viewModel)
+                        NavHost(RaionAPIViewModel = viewModel, NoteDAOViewModel = viewModel2)
                     })
 
                 }

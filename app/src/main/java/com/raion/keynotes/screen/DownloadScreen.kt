@@ -41,27 +41,23 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.raion.keynotes.R
 import com.raion.keynotes.component.BarButton
+import com.raion.keynotes.component.DownloadedNoteCard
 import com.raion.keynotes.component.NoteCard
-import com.raion.keynotes.component.Notes
 import com.raion.keynotes.component.RaionTextField
-import com.raion.keynotes.component.UserDetail
+import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.NoteItem
 import com.raion.keynotes.navigation.NavEnum
 
-//@Preview
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    viewModel: RaionAPIViewModel,
+fun DownloadScreen(
+    noteDAOViewModel: NoteDAOViewModel,
+    RaionAPIViewModel: RaionAPIViewModel,
     navController: NavController,
-    addNote: (Pair<String, String>) -> Unit,
-    deleteNote: (String) -> Unit
+    deleteNote: (String) -> Unit,
+    noteList: List<NoteClass>
 ){
-    // For testing
-    Notes(viewModel = viewModel)
-    UserDetail(viewModel = viewModel)
-
     var displayForm = remember {
         mutableStateOf(false)
     }
@@ -74,28 +70,11 @@ fun HomeScreen(
     var newNoteDescription = remember {
         mutableStateOf("")
     }
-    
-    var noteRawList = viewModel.getNote.value.data
-    var noteList: List<NoteItem>
 
-    if (noteRawList != null) {
-        noteList = noteRawList.data
-    } else {
-        noteList = emptyList()
-    }
-
-    var userDetail = viewModel.getUserDetail.value.data
-
-    var userId: String = ""
+    var userDetail = RaionAPIViewModel.getUserDetail.value.data
     var userName: String = ""
-    var password: String = ""
-    var salt: String = ""
-
     if(userDetail != null){
-        userId   = userDetail.data.id
         userName = userDetail.data.name
-        password = userDetail.data.password
-        salt     = userDetail.data.salt
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(30,30,30, 255)) {
@@ -144,81 +123,19 @@ fun HomeScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                Text(text = "#RawrNotes", fontSize = 28.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.inverseSurface)
+                                Text(text = "Downloaded Notes", fontSize = 28.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.inverseSurface)
                                 Spacer(modifier = Modifier.padding(5.dp))
 
-                                if(displayForm.value == true){
-                                    Card(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(180.dp),
-                                        shape = RoundedCornerShape(20.dp),
-                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
-                                        elevation = CardDefaults.cardElevation(5.dp),
-                                    ){
-                                        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                                            RaionTextField(
-                                                keyboardType = KeyboardType.Text,
-                                                text = newNoteTitle.value, label = "Insert Note Title",
-                                                onTextChange = {
-                                                    if ((it.all { char -> char.isDefined() || char.isWhitespace() } )){
-                                                        newNoteTitle.value = it
-                                                        preventFlag.value = false
-                                                    }
-                                                }
-                                            )
-                                            Spacer(modifier = Modifier.padding(5.dp))
-                                            RaionTextField(
-                                                keyboardType = KeyboardType.Text,
-                                                text = newNoteDescription.value, label = "Insert Note Description",
-                                                onTextChange = {
-                                                    if ((it.all { char -> char.isDefined() || char.isWhitespace() } )){
-                                                        newNoteDescription.value = it
-                                                    }
-                                                }
-                                            )
-                                            Spacer(modifier = Modifier.padding(3.dp))
-                                            if(newNoteTitle.value.equals("")){
-                                                preventFlag.value = true
-                                            }
-                                        }
-                                    }
+                                LazyColumn(modifier = Modifier.fillMaxSize()){
+                                    items(noteList){noteItem ->
+                                        DownloadedNoteCard(noteItem = noteItem){noteId ->
+                                            if(noteId.isNotEmpty()){
 
-                                    Spacer(modifier = Modifier.padding(8.dp))
-                                    BarButton(text = "Create new note",
-                                        color =
-                                        if(preventFlag.value == false){
-                                            Color(255,199,0,255)
-                                        } else {
-                                            Color(101, 100, 102)
-                                        }
-                                    ) {
-                                        if (preventFlag.value == false) {
-                                            addNote(
-                                                Pair(
-                                                    newNoteTitle.value,
-                                                    newNoteDescription.value
-                                                )
-                                            )
-                                            newNoteTitle.value = ""
-                                            newNoteDescription.value = ""
-                                            displayForm.value = !displayForm.value
-
-                                        }
-                                    }
-
-                                } else {
-                                    LazyColumn(modifier = Modifier.fillMaxSize()){
-                                        items(noteList){noteItem ->
-                                            NoteCard(noteItem = noteItem){noteId ->
-                                                if(noteId.isNotEmpty()){
-                                                    //deleteNote(noteItem.noteId)
-                                                    navController.navigate(route = NavEnum.NoteScreen.name+"/$noteId")
-                                                }
                                             }
                                         }
                                     }
                                 }
+
                             }
                         },
                         bottomBar = {
@@ -239,16 +156,6 @@ fun HomeScreen(
                                         horizontalArrangement = Arrangement.SpaceEvenly,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Box(modifier = Modifier
-                                            .width(85.dp)
-                                            .height(75.dp)
-                                            .padding(17.dp), contentAlignment = Alignment.Center){
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.download),
-                                                contentDescription = "home", tint = Color(255,199,0,255),
-                                                modifier = Modifier.clickable { navController.navigate(route = NavEnum.DownloadScreen.name) }
-                                            )
-                                        }
                                         Card(
                                             modifier = Modifier
                                                 .width(85.dp)
@@ -263,9 +170,23 @@ fun HomeScreen(
                                                 .fillMaxSize()
                                                 .padding(16.dp)
                                                 .padding(top = 2.dp), contentAlignment = Alignment.Center){
-                                                Icon(painter = painterResource(id = R.drawable.note), contentDescription = "home", tint = Color(255,199,0,255))
+                                                Icon(painter = painterResource(id = R.drawable.download), contentDescription = "home", tint = Color(255,199,0,255))
                                             }
                                         }
+
+                                        Box(modifier = Modifier
+                                            .width(85.dp)
+                                            .height(75.dp)
+                                            .padding(17.dp), contentAlignment = Alignment.Center){
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.note),
+                                                contentDescription = "home", tint = Color(255,199,0,255),
+                                                modifier = Modifier.clickable {
+                                                    navController.navigate(route = NavEnum.ProfileScreen.name)
+                                                }
+                                            )
+                                        }
+
                                         Box(modifier = Modifier
                                             .width(85.dp)
                                             .height(75.dp)
@@ -274,33 +195,36 @@ fun HomeScreen(
                                             Icon(
                                                 painter = painterResource(id = R.drawable.profile),
                                                 contentDescription = "home", tint = Color(255,199,0,255),
-                                                modifier = Modifier.clickable { navController.navigate(route = NavEnum.ProfileScreen.name) }
+                                                modifier = Modifier.clickable {
+                                                    navController.navigate(route = NavEnum.ProfileScreen.name)
+                                                }
                                             )
                                         }
+
                                     }
                                 }
                             }
                         },
-                        floatingActionButton = {
-                            Card(
-                                modifier = Modifier
-                                    .width(65.dp)
-                                    .height(65.dp)
-                                    .clickable { displayForm.value = !displayForm.value },
-                                shape    = CircleShape,
-                                colors   = CardDefaults.cardColors(Color(51,47,51)),
-                                elevation = CardDefaults.cardElevation(10.dp),
-                                border = BorderStroke(3.dp, color = Color(255,199,0,255))
-                            ) {
-                                Box(modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(15.dp)
-                                    .padding(top = 2.dp), contentAlignment = Alignment.Center){
-                                    Icon(painter = painterResource(id = R.drawable.add), contentDescription = "new pocket", tint = Color(255,199,0,255), modifier = Modifier.padding(2.dp
-                                    ))
-                                }
-                            }
-                        }
+                        //floatingActionButton = {
+                        //    Card(
+                        //        modifier = Modifier
+                        //            .width(65.dp)
+                        //            .height(65.dp)
+                        //            .clickable { displayForm.value = !displayForm.value },
+                        //        shape    = CircleShape,
+                        //        colors   = CardDefaults.cardColors(Color(51,47,51)),
+                        //        elevation = CardDefaults.cardElevation(10.dp),
+                        //        border = BorderStroke(3.dp, color = Color(255,199,0,255))
+                        //    ) {
+                        //        Box(modifier = Modifier
+                        //            .fillMaxSize()
+                        //            .padding(15.dp)
+                        //            .padding(top = 2.dp), contentAlignment = Alignment.Center){
+                        //            Icon(painter = painterResource(id = R.drawable.add), contentDescription = "new pocket", tint = Color(255,199,0,255), modifier = Modifier.padding(2.dp
+                        //            ))
+                        //        }
+                        //    }
+                        //}
                     )
                 }
             },

@@ -54,11 +54,14 @@ import com.raion.keynotes.navigation.NavEnum
 fun NoteScreen(
     navController: NavController,
     noteId: String?,
-    viewModel: RaionAPIViewModel
+    viewModel: RaionAPIViewModel,
+    deleteNote: (String) -> Unit,
+    downloadNote: (List<String>) -> Unit
 ) {
     var noteRawList = viewModel.getNote.value.data
     var noteList: List<NoteItem>
 
+    var thisNoteId: String = ""
     var noteTitle: String = ""
     var noteDescription: String = ""
     var noteCreatedAt: String = ""
@@ -69,6 +72,7 @@ fun NoteScreen(
 
         for(i in noteList.indices){
             if(noteList[i].noteId.equals(noteId)){
+                thisNoteId      = noteList[i].noteId
                 noteTitle       = noteList[i].title
                 noteDescription = noteList[i].description
                 noteCreatedAt   = noteList[i].createdAt
@@ -80,6 +84,9 @@ fun NoteScreen(
     }
 
     var colorFlag = remember {
+        mutableStateOf("1")
+    }
+    var navBarFlag = remember {
         mutableStateOf("1")
     }
 
@@ -137,213 +144,307 @@ fun NoteScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                    Column(
+                                Column(
+                                    modifier = Modifier
+                                    //.fillMaxSize()
+                                ) {
+                                    Card(
                                         modifier = Modifier
-                                        //.fillMaxSize()
+                                            .fillMaxWidth()
+                                            .height(70.dp),
+                                        shape = RoundedCornerShape(20.dp),
+                                        elevation = CardDefaults.cardElevation(8.dp),
+                                        colors = CardDefaults.cardColors(Color(51, 47, 51))
                                     ) {
-                                        Card(
+                                        Column(
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(70.dp),
-                                            shape = RoundedCornerShape(20.dp),
-                                            elevation = CardDefaults.cardElevation(8.dp),
-                                            colors = CardDefaults.cardColors(Color(51,47,51))
+                                                .fillMaxSize()
+                                                .padding(start = 16.dp),
+                                            horizontalAlignment = Alignment.Start,
+                                            verticalArrangement = Arrangement.Center
                                         ) {
-                                            Column(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(start = 16.dp),
-                                                horizontalAlignment = Alignment.Start,
-                                                verticalArrangement = Arrangement.Center
-                                            ) {
-                                                Text(
-                                                    text = "CreatedAt: $noteCreatedAt",
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = Color.White
-                                                )
-                                                Spacer(modifier = Modifier.padding(1.dp))
-                                                Text(
-                                                    text = "UpdatedAt: $noteUpdatedAt",
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = Color.White
-                                                )
-                                            }
+                                            Text(
+                                                text = "CreatedAt: $noteCreatedAt",
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color.White
+                                            )
+                                            Spacer(modifier = Modifier.padding(1.dp))
+                                            Text(
+                                                text = "UpdatedAt: $noteUpdatedAt",
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color.White
+                                            )
                                         }
+                                    }
 
-                                        Card(
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(430.dp)
+                                            .padding(
+                                                //start = 25.dp,
+                                                //end = 25.dp,
+                                                top = 15.dp,
+                                                bottom = 15.dp
+                                            ),
+                                        shape = RoundedCornerShape(15.dp),
+                                        elevation = CardDefaults.cardElevation(8.dp),
+                                        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.inversePrimary)
+                                    ) {
+                                        Column(
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(430.dp)
-                                                .padding(
-                                                    //start = 25.dp,
-                                                    //end = 25.dp,
-                                                    top = 15.dp,
-                                                    bottom = 15.dp
-                                                ),
-                                            shape = RoundedCornerShape(15.dp),
-                                            elevation = CardDefaults.cardElevation(8.dp),
-                                            //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.inversePrimary)
+                                                .fillMaxSize()
                                         ) {
-                                            Column(
+                                            Card(
                                                 modifier = Modifier
-                                                    .fillMaxSize()
-                                            ) {
-                                                Card(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .height(40.dp),
-                                                    shape = RoundedCornerShape(
-                                                        topStart = 15.dp,
-                                                        topEnd = 15.dp
-                                                    ),
-                                                    colors = CardDefaults.cardColors(
-                                                        Color(
-                                                            51,47,51
-                                                        )
+                                                    .fillMaxWidth()
+                                                    .height(40.dp),
+                                                shape = RoundedCornerShape(
+                                                    topStart = 15.dp,
+                                                    topEnd = 15.dp
+                                                ),
+                                                colors = CardDefaults.cardColors(
+                                                    Color(
+                                                        51, 47, 51
                                                     )
+                                                )
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .padding(start = 15.dp, end = 15.dp),
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.SpaceBetween
                                                 ) {
-                                                    Row(
-                                                        modifier = Modifier
-                                                            .fillMaxSize()
-                                                            .padding(start = 15.dp, end = 15.dp),
-                                                        verticalAlignment = Alignment.CenterVertically,
-                                                        horizontalArrangement = Arrangement.SpaceBetween
-                                                    ) {
-                                                        Text(
-                                                            text = "Note",
-                                                            fontSize = 18.sp,
-                                                            fontWeight = FontWeight(500),
-                                                            color = Color.White
-                                                        )
+                                                    Text(
+                                                        text = "Note",
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight(500),
+                                                        color = Color.White
+                                                    )
 
-                                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Row(verticalAlignment = Alignment.CenterVertically) {
 
-                                                            Spacer(modifier = Modifier.padding(3.dp))
+                                                        Spacer(modifier = Modifier.padding(3.dp))
 
-                                                        }
                                                     }
                                                 }
+                                            }
 
-                                                Column(modifier = Modifier
+                                            Column(
+                                                modifier = Modifier
                                                     .padding(8.dp)
                                                     .fillMaxSize(),
-                                                    //verticalArrangement = Arrangement.SpaceBetween
+                                                //verticalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(
+                                                    text = noteDescription,
+                                                    fontSize = 15.sp,
+                                                    maxLines = 19,
+                                                    textAlign = TextAlign.Justify,
+                                                    lineHeight = 18.sp
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    when (navBarFlag.value) {
+                                        "1" -> {
+                                            Card(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(55.dp),
+                                                shape = RoundedCornerShape(20.dp),
+                                                elevation = CardDefaults.cardElevation(8.dp),
+                                                colors = CardDefaults.cardColors(Color(51, 47, 51))
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .padding(start = 16.dp, end = 16.dp),
+                                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                                    verticalAlignment = Alignment.CenterVertically
                                                 ) {
-                                                    Text(text = noteDescription, fontSize = 15.sp, maxLines = 19, textAlign = TextAlign.Justify, lineHeight = 18.sp)
+                                                    Text(
+                                                        text = "Note Color: ",
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = Color.White
+                                                    )
+
+                                                    Row(
+                                                        horizontalArrangement = Arrangement.Start,
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Card(
+                                                            modifier = Modifier
+                                                                .width(35.dp)
+                                                                .height(35.dp)
+                                                                .clickable {
+                                                                    colorFlag.value = "1"
+                                                                    //clickFlagReturn(clickFlag.value)
+                                                                },
+                                                            shape = CircleShape,
+                                                            colors = CardDefaults.cardColors(
+                                                                Color(
+                                                                    250,
+                                                                    110,
+                                                                    80
+                                                                )
+                                                            ),
+                                                            border =
+                                                            if (colorFlag.value == "1") {
+                                                                BorderStroke(4.dp, Color.White)
+                                                            } else {
+                                                                null
+                                                            }
+                                                        ) {}
+
+                                                        Spacer(modifier = Modifier.padding(5.dp))
+
+                                                        Card(
+                                                            modifier = Modifier
+                                                                .width(35.dp)
+                                                                .height(35.dp)
+                                                                .clickable {
+                                                                    colorFlag.value = "2"
+                                                                    //clickFlagReturn(clickFlag.value)
+                                                                },
+                                                            shape = CircleShape,
+                                                            colors = CardDefaults.cardColors(
+                                                                Color(
+                                                                    185,
+                                                                    250,
+                                                                    80
+                                                                )
+                                                            ),
+                                                            border =
+                                                            if (colorFlag.value == "2") {
+                                                                BorderStroke(4.dp, Color.White)
+                                                            } else {
+                                                                null
+                                                            }
+                                                        ) {}
+
+                                                        Spacer(modifier = Modifier.padding(5.dp))
+
+                                                        Card(
+                                                            modifier = Modifier
+                                                                .width(35.dp)
+                                                                .height(35.dp)
+                                                                .clickable {
+                                                                    colorFlag.value = "3"
+                                                                    //clickFlagReturn(clickFlag.value)
+                                                                },
+                                                            shape = CircleShape,
+                                                            colors = CardDefaults.cardColors(
+                                                                Color(
+                                                                    80,
+                                                                    120,
+                                                                    250
+                                                                )
+                                                            ),
+                                                            border =
+                                                            if (colorFlag.value == "3") {
+                                                                BorderStroke(4.dp, Color.White)
+                                                            } else {
+                                                                null
+                                                            }
+                                                        ) {}
+
+                                                        Spacer(modifier = Modifier.padding(5.dp))
+
+                                                        Card(
+                                                            modifier = Modifier
+                                                                .width(35.dp)
+                                                                .height(35.dp)
+                                                                .clickable {
+                                                                    colorFlag.value = "4"
+                                                                    //clickFlagReturn(clickFlag.value)
+                                                                },
+                                                            shape = CircleShape,
+                                                            colors = CardDefaults.cardColors(
+                                                                Color(
+                                                                    170,
+                                                                    80,
+                                                                    250
+                                                                )
+                                                            ),
+                                                            border =
+                                                            if (colorFlag.value == "4") {
+                                                                BorderStroke(4.dp, Color.White)
+                                                            } else {
+                                                                null
+                                                            }
+                                                        ) {}
+                                                    }
                                                 }
                                             }
                                         }
 
-                                        Card(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(55.dp),
-                                            shape = RoundedCornerShape(20.dp),
-                                            elevation = CardDefaults.cardElevation(8.dp),
-                                            colors = CardDefaults.cardColors(Color(51,47,51))
-                                        ) {
-                                            Row(
+                                        "2" -> {
+                                            Card(
                                                 modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(start = 16.dp, end = 16.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
+                                                    .fillMaxWidth()
+                                                    .height(55.dp)
+                                                    .clickable {
+                                                               downloadNote(listOf(thisNoteId, noteTitle, noteDescription, noteCreatedAt, noteUpdatedAt))
+                                                    },
+                                                shape = RoundedCornerShape(20.dp),
+                                                elevation = CardDefaults.cardElevation(8.dp),
+                                                colors = CardDefaults.cardColors(Color(80, 120, 250))
                                             ) {
-                                                Text(
-                                                    text = "Note Color: ",
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = Color.White
-                                                )
-
                                                 Row(
-                                                    horizontalArrangement = Arrangement.Start,
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .padding(start = 16.dp, end = 16.dp),
+                                                    horizontalArrangement = Arrangement.Center,
                                                     verticalAlignment = Alignment.CenterVertically
                                                 ) {
-                                                    Card(
-                                                        modifier = Modifier
-                                                            .width(35.dp)
-                                                            .height(35.dp)
-                                                            .clickable {
-                                                                colorFlag.value = "1"
-                                                                //clickFlagReturn(clickFlag.value)
-                                                            },
-                                                        shape = CircleShape,
-                                                        colors = CardDefaults.cardColors(Color(250, 110, 80)),
-                                                        border =
-                                                        if (colorFlag.value == "1") {
-                                                            BorderStroke(4.dp, Color.White)
-                                                        } else {
-                                                            null
-                                                        }
-                                                    ) {}
+                                                    Text(
+                                                        text = "Download this note",
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = Color.White
+                                                    )
+                                                }
+                                            }
+                                        }
 
-                                                    Spacer(modifier = Modifier.padding(5.dp))
-
-                                                    Card(
-                                                        modifier = Modifier
-                                                            .width(35.dp)
-                                                            .height(35.dp)
-                                                            .clickable {
-                                                                colorFlag.value = "2"
-                                                                //clickFlagReturn(clickFlag.value)
-                                                            },
-                                                        shape = CircleShape,
-                                                        colors = CardDefaults.cardColors(Color(185, 250, 80)),
-                                                        border =
-                                                        if (colorFlag.value == "2") {
-                                                            BorderStroke(4.dp, Color.White)
-                                                        } else {
-                                                            null
-                                                        }
-                                                    ) {}
-
-                                                    Spacer(modifier = Modifier.padding(5.dp))
-
-                                                    Card(
-                                                        modifier = Modifier
-                                                            .width(35.dp)
-                                                            .height(35.dp)
-                                                            .clickable {
-                                                                colorFlag.value = "3"
-                                                                //clickFlagReturn(clickFlag.value)
-                                                            },
-                                                        shape = CircleShape,
-                                                        colors = CardDefaults.cardColors(Color(80, 120, 250)),
-                                                        border =
-                                                        if (colorFlag.value == "3") {
-                                                            BorderStroke(4.dp, Color.White)
-                                                        } else {
-                                                            null
-                                                        }
-                                                    ) {}
-
-                                                    Spacer(modifier = Modifier.padding(5.dp))
-
-                                                    Card(
-                                                        modifier = Modifier
-                                                            .width(35.dp)
-                                                            .height(35.dp)
-                                                            .clickable {
-                                                                colorFlag.value = "4"
-                                                                //clickFlagReturn(clickFlag.value)
-                                                            },
-                                                        shape = CircleShape,
-                                                        colors = CardDefaults.cardColors(Color(170, 80, 250)),
-                                                        border =
-                                                        if (colorFlag.value == "4") {
-                                                            BorderStroke(4.dp, Color.White)
-                                                        } else {
-                                                            null
-                                                        }
-                                                    ) {}
+                                        "3" -> {
+                                            Card(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(55.dp)
+                                                    .clickable {
+                                                                deleteNote(thisNoteId)
+                                                                navController.navigate(route = NavEnum.HomeScreen.name)
+                                                    },
+                                                shape = RoundedCornerShape(20.dp),
+                                                elevation = CardDefaults.cardElevation(8.dp),
+                                                colors = CardDefaults.cardColors(Color(250, 110, 80))
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .padding(start = 16.dp, end = 16.dp),
+                                                    horizontalArrangement = Arrangement.Center,
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Text(
+                                                        text = "Delete this note",
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = Color.White
+                                                    )
                                                 }
                                             }
                                         }
                                     }
                                 }
+                            }
                         },
                         bottomBar = {
                             Box(
@@ -370,7 +471,7 @@ fun NoteScreen(
                                             .height(75.dp)
                                             .padding(17.dp)
                                             .clickable {
-
+                                                navBarFlag.value = "1"
                                             }, contentAlignment = Alignment.Center) {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.color),
@@ -383,7 +484,7 @@ fun NoteScreen(
                                                 .width(85.dp)
                                                 .height(75.dp)
                                                 .clickable {
-
+                                                    navBarFlag.value = "2"
                                                 },
                                             shape = CircleShape,
                                             colors = CardDefaults.cardColors(Color(255,199,0,255)),
@@ -410,7 +511,7 @@ fun NoteScreen(
                                             .padding(16.dp)
                                             .padding(top = 3.dp)
                                             .clickable {
-
+                                                navBarFlag.value = "3"
                                             }, contentAlignment = Alignment.Center) {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.delete),
