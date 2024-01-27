@@ -3,12 +3,13 @@ package com.raion.keynotes.repository
 import android.util.Log
 import com.raion.keynotes.data.DataExceptionHandling
 import com.raion.keynotes.data.NoteDAO
-import com.raion.keynotes.model.DeleteNoteResponse
 import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.PostNoteRequest
 import com.raion.keynotes.model.GetNoteResponse
 import com.raion.keynotes.model.GetUserDetailResponse
-import com.raion.keynotes.model.PostNoteResponse
+import com.raion.keynotes.model.PostLoginRequest
+import com.raion.keynotes.model.PostLoginResponse
+import com.raion.keynotes.model.PostRegisterRequest
 import com.raion.keynotes.network.RaionAPI
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -16,10 +17,7 @@ import javax.inject.Inject
 class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
     private val getNoteExceptionHandling       = DataExceptionHandling<GetNoteResponse, Boolean, Exception>()
     private val getUserDetailExceptionHandling = DataExceptionHandling<GetUserDetailResponse, Boolean, Exception>()
-
-    //private val postNoteExceptionHandling      = DataExceptionHandling<PostNoteResponse, Boolean, Exception>()
-
-    //private val deleteNoteExceptionHandling    = DataExceptionHandling<DeleteNoteResponse, Boolean, Exception>()
+    val postLoginExceptionHandling     = DataExceptionHandling<PostLoginResponse, Boolean, Exception>()
 
     suspend fun getNoteResponse(): DataExceptionHandling<GetNoteResponse, Boolean, Exception>{
         try {
@@ -66,6 +64,37 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
         } catch (e: Exception){
             Log.d("Repo exception", "${e.printStackTrace()}")
         }
+    }
+
+    suspend fun registerRequest(nim: String, name: String, password: String, description: String){
+        val registerRequest = PostRegisterRequest(nim, name, password, description)
+        try {
+            val response = api.postRegister(registerRequest)
+
+            if(!response.error){
+                Log.d("Repo sucsess", "Response: ${response.data}")
+            } else {
+                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+            }
+        } catch (e: Exception){
+            Log.d("Repo exception", "${e.printStackTrace()}")
+        }
+    }
+
+    suspend fun loginRequest(nim: String, password: String): DataExceptionHandling<PostLoginResponse, Boolean, Exception>{
+        val loginRequest = PostLoginRequest(nim, password)
+        try {
+            postLoginExceptionHandling.data    = api.postLogin(loginRequest)
+            postLoginExceptionHandling.loading = true
+
+            if(postLoginExceptionHandling.data.toString().isNotEmpty()) {
+                postLoginExceptionHandling.loading = false
+            }
+        } catch (e: Exception){
+            postLoginExceptionHandling.e = e
+            Log.d("Repo exception", "postLoginResponse: ${postLoginExceptionHandling.e!!.localizedMessage}")
+        }
+        return postLoginExceptionHandling
     }
 
     suspend fun deleteNoteRequest(noteId: String){

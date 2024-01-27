@@ -3,8 +3,12 @@ package com.raion.keynotes.network
 import com.raion.keynotes.model.DeleteNoteResponse
 import com.raion.keynotes.model.GetNoteResponse
 import com.raion.keynotes.model.GetUserDetailResponse
+import com.raion.keynotes.model.PostLoginRequest
+import com.raion.keynotes.model.PostLoginResponse
 import com.raion.keynotes.model.PostNoteRequest
 import com.raion.keynotes.model.PostNoteResponse
+import com.raion.keynotes.model.PostRegisterRequest
+import com.raion.keynotes.model.PostRegisterResponse
 import com.raion.keynotes.util.Token
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -29,6 +33,13 @@ interface RaionAPI {
     @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
     suspend fun postNote(@Body request: PostNoteRequest): PostNoteResponse
 
+    @POST("register")
+    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
+    suspend fun postRegister(@Body request: PostRegisterRequest): PostRegisterResponse
+
+    @POST("login")
+    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
+    suspend fun postLogin(@Body request: PostLoginRequest): PostLoginResponse
 
     //DELETE
     @DELETE("note/{noteId}")

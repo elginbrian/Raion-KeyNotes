@@ -46,6 +46,33 @@ data class PostNoteRequest(
     @SerializedName("description") val description: String
 )
 
+data class PostRegisterResponse(
+    @SerializedName("error")   val error: Boolean,
+    @SerializedName("status")  val status: String,
+    @SerializedName("message") val message: String,
+    @SerializedName("data")    val data: String
+)
+data class PostRegisterRequest(
+    @SerializedName("nim")         val nim: String,
+    @SerializedName("name")        val name: String,
+    @SerializedName("password")    val password: String,
+    @SerializedName("description") val description: String
+)
+
+data class PostLoginResponse(
+    @SerializedName("error")   val error: Boolean,
+    @SerializedName("status")  val status: String,
+    @SerializedName("message") val message: String,
+    @SerializedName("data")    val data: List<LoginItem>
+)
+data class PostLoginRequest(
+    @SerializedName("nim")      val nim: String,
+    @SerializedName("password") val password: String
+)
+data class LoginItem(
+    @SerializedName("token") val token: String
+)
+
 
 // DELETE NOTE
 data class DeleteNoteResponse(

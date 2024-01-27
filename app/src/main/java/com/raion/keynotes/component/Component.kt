@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raion.keynotes.model.NoteClass
@@ -42,6 +43,7 @@ fun Notes(
 ){
     val notes = viewModel.getNote.value.data
     val note0Id: String
+    val loginResponse = viewModel.postLoginResponse
 
     if(viewModel.getNote.value.loading == true){
         CircularProgressIndicator()
@@ -50,6 +52,7 @@ fun Notes(
     } else {
         Log.d("Notes at Component.kt Log.d", "Note: Message -> ${notes?.message} | Count: -> ${notes?.count}")
         Log.d("Notes at Component.kt Log.d", "Note: Data -> ${notes?.data.toString()}")
+        Log.d("Notes at component.kt Log.d", "Login Response -> ${loginResponse.toString()}")
     }
 }
 
@@ -241,3 +244,5 @@ fun BarButton(
         }
     }
 }
+
+

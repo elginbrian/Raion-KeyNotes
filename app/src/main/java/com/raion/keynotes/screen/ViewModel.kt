@@ -9,6 +9,7 @@ import com.raion.keynotes.data.NoteDAO
 import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.GetNoteResponse
 import com.raion.keynotes.model.GetUserDetailResponse
+import com.raion.keynotes.model.PostLoginResponse
 import com.raion.keynotes.repository.NoteDAORepository
 import com.raion.keynotes.repository.RaionAPIRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,8 +59,12 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
         }
     }
 
-    fun addNote(title: String, description: String) = viewModelScope.launch { repository.postNoteRequest(title, description) }
-    fun deleteNote(noteId: String)                  = viewModelScope.launch { repository.deleteNoteRequest(noteId) }
+    val postLoginResponse = repository.postLoginExceptionHandling.data
+
+    fun postNote(title: String, description: String)                                   = viewModelScope.launch { repository.postNoteRequest(title, description) }
+    fun postRegister(nim: String, name: String, password: String, description: String) = viewModelScope.launch { repository.registerRequest(nim, name, password, description) }
+    fun postLogin(nim: String, password: String)                                       = viewModelScope.launch { repository.loginRequest(nim, password) }
+    fun deleteNote(noteId: String)                                                     = viewModelScope.launch { repository.deleteNoteRequest(noteId) }
 }
 
 @HiltViewModel

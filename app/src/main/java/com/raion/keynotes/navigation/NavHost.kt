@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.screen.DownloadScreen
 import com.raion.keynotes.screen.HomeScreen
+import com.raion.keynotes.screen.LoginScreen
 import com.raion.keynotes.screen.NoteDAOViewModel
 import com.raion.keynotes.screen.NoteScreen
 import com.raion.keynotes.screen.ProfileScreen
@@ -28,11 +29,20 @@ fun NavHost(
         navController = navController,
         startDestination = NavEnum.HomeScreen.name
     ) {
+        composable(NavEnum.LoginScreen.name){
+            LoginScreen(
+                navController = navController,
+                viewModel = RaionAPIViewModel,
+                postRegister = { RaionAPIViewModel.postRegister(it[0], it[1], it[2], it[3]) },
+                postLogin = { RaionAPIViewModel.postLogin(it[0], it[1]) }
+            )
+        }
+
         composable(NavEnum.HomeScreen.name){
             HomeScreen(
                 viewModel = RaionAPIViewModel,
                 navController = navController,
-                addNote = { RaionAPIViewModel.addNote(it.first, it.second) },
+                addNote = { RaionAPIViewModel.postNote(it.first, it.second) },
                 deleteNote = { RaionAPIViewModel.deleteNote(it)}
             )
         }
