@@ -12,6 +12,7 @@ import com.raion.keynotes.screen.DownloadScreen
 import com.raion.keynotes.screen.HomeScreen
 import com.raion.keynotes.screen.LoginScreen
 import com.raion.keynotes.screen.NoteDAOViewModel
+import com.raion.keynotes.screen.CreateNewNoteScreen
 import com.raion.keynotes.screen.NoteScreen
 import com.raion.keynotes.screen.ProfileScreen
 import com.raion.keynotes.screen.RaionAPIViewModel
@@ -27,7 +28,7 @@ fun NavHost(
 
     androidx.navigation.compose.NavHost(
         navController = navController,
-        startDestination = NavEnum.HomeScreen.name
+        startDestination = NavEnum.LoginScreen.name
     ) {
         composable(NavEnum.LoginScreen.name){
             LoginScreen(
@@ -62,7 +63,16 @@ fun NavHost(
                     description = it[2],
                     createdAt = it[3],
                     updatedAt = it[4]))
-                }
+                },
+                putNote = { RaionAPIViewModel.putNote(it[0], it[1], it[2]) }
+            )
+        }
+
+        composable(NavEnum.CreateNewNoteScreen.name){
+            CreateNewNoteScreen(
+                navController = navController,
+                viewModel = RaionAPIViewModel,
+                postNote = { RaionAPIViewModel.postNote(it.first, it.second) }
             )
         }
 

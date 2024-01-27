@@ -10,6 +10,7 @@ import com.raion.keynotes.model.GetUserDetailResponse
 import com.raion.keynotes.model.PostLoginRequest
 import com.raion.keynotes.model.PostLoginResponse
 import com.raion.keynotes.model.PostRegisterRequest
+import com.raion.keynotes.model.PutNoteRequest
 import com.raion.keynotes.network.RaionAPI
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -95,6 +96,21 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI){
             Log.d("Repo exception", "postLoginResponse: ${postLoginExceptionHandling.e!!.localizedMessage}")
         }
         return postLoginExceptionHandling
+    }
+
+    suspend fun putNoteRequest(noteId: String, title: String, description: String){
+        val putNoteRequest = PutNoteRequest(title, description)
+        try {
+            val response = api.putNote(noteId = noteId, request = putNoteRequest)
+
+            if(!response.error){
+                Log.d("Repo sucsess", "Response: ${response.data}")
+            } else {
+                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+            }
+        } catch (e: Exception){
+            Log.d("Repo exception", "${e.printStackTrace()}")
+        }
     }
 
     suspend fun deleteNoteRequest(noteId: String){

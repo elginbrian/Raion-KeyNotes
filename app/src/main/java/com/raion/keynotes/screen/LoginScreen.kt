@@ -232,7 +232,13 @@ fun LoginScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.padding(80.dp))
+            Spacer(modifier = Modifier.padding(5.dp))
+            BarButton(
+                text = "Homescreen"
+            ){
+                navController.navigate(route = NavEnum.HomeScreen.name)
+            }
+            Spacer(modifier = Modifier.padding(60.dp))
         }
     }
 }

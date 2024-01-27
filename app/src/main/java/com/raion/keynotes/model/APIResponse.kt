@@ -46,6 +46,7 @@ data class PostNoteRequest(
     @SerializedName("description") val description: String
 )
 
+// POST REGISTER
 data class PostRegisterResponse(
     @SerializedName("error")   val error: Boolean,
     @SerializedName("status")  val status: String,
@@ -59,6 +60,7 @@ data class PostRegisterRequest(
     @SerializedName("description") val description: String
 )
 
+// POST LOGIN
 data class PostLoginResponse(
     @SerializedName("error")   val error: Boolean,
     @SerializedName("status")  val status: String,
@@ -73,6 +75,18 @@ data class LoginItem(
     @SerializedName("token") val token: String
 )
 
+// PUT NOTE
+data class PutNoteResponse(
+    @SerializedName("error")   val error: Boolean,
+    @SerializedName("status")  val status: String,
+    @SerializedName("message") val message: String,
+    @SerializedName("data")    val data: String
+)
+
+data class PutNoteRequest(
+    @SerializedName("title")       val title: String,
+    @SerializedName("description") val description: String
+)
 
 // DELETE NOTE
 data class DeleteNoteResponse(

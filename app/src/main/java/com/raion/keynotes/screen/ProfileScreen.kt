@@ -313,7 +313,16 @@ fun ProfileScreen(
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Text(text = "Last Activity:", fontSize = 16.sp)
-                                                Text(text = noteList[noteList.size - 1].updatedAt, fontSize = 13.sp)
+                                                Text(
+                                                    text =
+                                                        if(noteList.size > 0){
+                                                            noteList[noteList.size - 1].updatedAt
+                                                        } else {
+                                                            "none"
+                                                        }
+                                                    ,
+                                                    fontSize = 13.sp
+                                                )
                                             }
                                         }
                                     }

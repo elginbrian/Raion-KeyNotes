@@ -62,9 +62,6 @@ fun HomeScreen(
     Notes(viewModel = viewModel)
     UserDetail(viewModel = viewModel)
 
-    var displayForm = remember {
-        mutableStateOf(false)
-    }
     var preventFlag = remember {
         mutableStateOf(false)
     }
@@ -81,7 +78,7 @@ fun HomeScreen(
     if (noteRawList != null) {
         noteList = noteRawList.data
     } else {
-        noteList = emptyList()
+        noteList = listOf()
     }
 
     var userDetail = viewModel.getUserDetail.value.data
@@ -147,67 +144,7 @@ fun HomeScreen(
                                 Text(text = "#RawrNotes", fontSize = 28.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.inverseSurface)
                                 Spacer(modifier = Modifier.padding(5.dp))
 
-                                if(displayForm.value == true){
-                                    Card(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(180.dp),
-                                        shape = RoundedCornerShape(20.dp),
-                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
-                                        elevation = CardDefaults.cardElevation(5.dp),
-                                    ){
-                                        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                                            RaionTextField(
-                                                keyboardType = KeyboardType.Text,
-                                                text = newNoteTitle.value, label = "Insert Note Title",
-                                                onTextChange = {
-                                                    if ((it.all { char -> char.isDefined() || char.isWhitespace() } )){
-                                                        newNoteTitle.value = it
-                                                        preventFlag.value = false
-                                                    }
-                                                }
-                                            )
-                                            Spacer(modifier = Modifier.padding(5.dp))
-                                            RaionTextField(
-                                                keyboardType = KeyboardType.Text,
-                                                text = newNoteDescription.value, label = "Insert Note Description",
-                                                onTextChange = {
-                                                    if ((it.all { char -> char.isDefined() || char.isWhitespace() } )){
-                                                        newNoteDescription.value = it
-                                                    }
-                                                }
-                                            )
-                                            Spacer(modifier = Modifier.padding(3.dp))
-                                            if(newNoteTitle.value.equals("")){
-                                                preventFlag.value = true
-                                            }
-                                        }
-                                    }
-
-                                    Spacer(modifier = Modifier.padding(8.dp))
-                                    BarButton(text = "Create new note",
-                                        color =
-                                        if(preventFlag.value == false){
-                                            Color(255,199,0,255)
-                                        } else {
-                                            Color(101, 100, 102)
-                                        }
-                                    ) {
-                                        if (preventFlag.value == false) {
-                                            addNote(
-                                                Pair(
-                                                    newNoteTitle.value,
-                                                    newNoteDescription.value
-                                                )
-                                            )
-                                            newNoteTitle.value = ""
-                                            newNoteDescription.value = ""
-                                            displayForm.value = !displayForm.value
-
-                                        }
-                                    }
-
-                                } else {
+                                if(noteRawList != null){
                                     LazyColumn(modifier = Modifier.fillMaxSize()){
                                         items(noteList){noteItem ->
                                             NoteCard(noteItem = noteItem){noteId ->
@@ -218,6 +155,9 @@ fun HomeScreen(
                                             }
                                         }
                                     }
+
+                                } else {
+
                                 }
                             }
                         },
@@ -286,7 +226,7 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .width(65.dp)
                                     .height(65.dp)
-                                    .clickable { displayForm.value = !displayForm.value },
+                                    .clickable { navController.navigate(route = NavEnum.CreateNewNoteScreen.name) },
                                 shape    = CircleShape,
                                 colors   = CardDefaults.cardColors(Color(51,47,51)),
                                 elevation = CardDefaults.cardElevation(10.dp),

@@ -182,7 +182,7 @@ fun DownloadScreen(
                                                 painter = painterResource(id = R.drawable.note),
                                                 contentDescription = "home", tint = Color(255,199,0,255),
                                                 modifier = Modifier.clickable {
-                                                    navController.navigate(route = NavEnum.ProfileScreen.name)
+                                                    navController.navigate(route = NavEnum.HomeScreen.name)
                                                 }
                                             )
                                         }

@@ -5,7 +5,8 @@ enum class NavEnum {
     NoteScreen,
     ProfileScreen,
     DownloadScreen,
-    LoginScreen
+    LoginScreen,
+    CreateNewNoteScreen
     ;
 
     companion object{
@@ -16,6 +17,7 @@ enum class NavEnum {
             ProfileScreen.name -> ProfileScreen
             DownloadScreen.name -> DownloadScreen
             LoginScreen.name -> LoginScreen
+            CreateNewNoteScreen.name -> CreateNewNoteScreen
             null -> HomeScreen
             else -> throw IllegalArgumentException("Route $route is not recognized")
         }

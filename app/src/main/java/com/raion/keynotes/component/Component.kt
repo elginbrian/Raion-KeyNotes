@@ -3,6 +3,7 @@ package com.raion.keynotes.component
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -24,8 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -81,6 +86,17 @@ fun NoteCard(
     noteItem: NoteItem,
     trigger: (String) -> Unit
 ){
+    var noteColor: Color = MaterialTheme.colorScheme.onPrimary
+    if(noteItem.description.contains("#NoteColorRed")){
+        noteColor = Color(250, 110, 80)
+    } else if(noteItem.description.contains("#NoteColorGreen")){
+        noteColor = Color(185, 250, 80)
+    } else if (noteItem.description.contains("#NoteColorBlue")){
+        noteColor = Color(80, 120, 250)
+    } else if (noteItem.description.contains("#NoteColorViolet")){
+        noteColor = Color(170, 80, 250)
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -94,7 +110,7 @@ fun NoteCard(
             .clickable { trigger(noteItem.noteId) },
         shape = RoundedCornerShape(15.dp),
         elevation = CardDefaults.cardElevation(10.dp),
-        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.inversePrimary)
+        colors = CardDefaults.cardColors(noteColor)
     ){
         Column(
             modifier = Modifier
@@ -124,7 +140,6 @@ fun NoteCard(
             Column(modifier = Modifier
                 .padding(8.dp)
                 .fillMaxSize(),
-                //verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = noteItem.description, fontSize = 12.sp, maxLines = 8, textAlign = TextAlign.Justify, lineHeight = 13.sp)
             }
@@ -241,6 +256,35 @@ fun BarButton(
             verticalArrangement = Arrangement.Center
         ) {
             Text(text = text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+        }
+    }
+}
+
+@Composable
+fun TransparentTextField(
+    text: String = "",
+    hint: String = "",
+    modifier: Modifier = Modifier,
+    isHintVisible: Boolean = true,
+    onValueChange: (String) -> Unit,
+    textStyle: TextStyle = TextStyle(),
+    singleLine: Boolean = false,
+    onFocusChange: (FocusState) -> Unit
+){
+    Box(
+        modifier = Modifier
+    ) {
+        BasicTextField(
+            value = text,
+            onValueChange = onValueChange,
+            singleLine = singleLine,
+            textStyle = textStyle,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { onFocusChange(it) }
+        )
+        if(isHintVisible){
+            Text(text = hint, style = textStyle, color = Color.DarkGray)
         }
     }
 }
