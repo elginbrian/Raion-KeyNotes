@@ -1,6 +1,7 @@
 package com.raion.keynotes.screen
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -50,6 +52,7 @@ fun CreateNewNoteScreen(
     viewModel: RaionAPIViewModel,
     postNote: (Pair<String, String>) -> Unit
 ) {
+    val context = LocalContext.current as Activity
     var colorFlag = remember {
         mutableStateOf("0")
     }
@@ -97,6 +100,8 @@ fun CreateNewNoteScreen(
                                 .padding(bottom = 6.dp)
                                 .clickable {
                                     postNote(Pair(newNoteTitle.value, newNoteDescription.value))
+                                    navController.navigate(route = NavEnum.HomeScreen.name)
+                                    context.recreate()
                                     navController.navigate(route = NavEnum.HomeScreen.name)
                                            },
                             contentDescription = ""

@@ -1,6 +1,7 @@
 package com.raion.keynotes.screen
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -56,6 +58,7 @@ fun ProfileScreen(
     viewModel: RaionAPIViewModel,
     navController: NavController
 ) {
+    val context = LocalContext.current as Activity
     var displayForm = remember {
         mutableStateOf(false)
     }
@@ -316,7 +319,7 @@ fun ProfileScreen(
                                                 Text(
                                                     text =
                                                         if(noteList.size > 0){
-                                                            noteList[noteList.size - 1].updatedAt
+                                                            noteList[noteList.lastIndex].updatedAt
                                                         } else {
                                                             "none"
                                                         }

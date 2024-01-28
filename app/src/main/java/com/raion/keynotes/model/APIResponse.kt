@@ -65,7 +65,7 @@ data class PostLoginResponse(
     @SerializedName("error")   val error: Boolean,
     @SerializedName("status")  val status: String,
     @SerializedName("message") val message: String,
-    @SerializedName("data")    val data: List<LoginItem>
+    @SerializedName("data")    val data: LoginItem
 )
 data class PostLoginRequest(
     @SerializedName("nim")      val nim: String,

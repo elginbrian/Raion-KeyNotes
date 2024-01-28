@@ -2,12 +2,18 @@ package com.raion.keynotes.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.raion.keynotes.model.NoteClass
+import com.raion.keynotes.model.PostLoginResponse
+import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.screen.DownloadScreen
 import com.raion.keynotes.screen.HomeScreen
 import com.raion.keynotes.screen.LoginScreen
@@ -16,15 +22,27 @@ import com.raion.keynotes.screen.CreateNewNoteScreen
 import com.raion.keynotes.screen.NoteScreen
 import com.raion.keynotes.screen.ProfileScreen
 import com.raion.keynotes.screen.RaionAPIViewModel
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 @Composable
 fun NavHost(
     RaionAPIViewModel: RaionAPIViewModel,
     NoteDAOViewModel: NoteDAOViewModel
 ){
-    val navController = rememberNavController()
+    val navController  = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
-    var noteList = NoteDAOViewModel.notelist.collectAsState().value
+    var noteList  = NoteDAOViewModel.notelist.collectAsState().value
+    //var tokenList = RaionAPIViewModel.tokenlist.collectAsState().value
+
+    //if(!tokenList.isNullOrEmpty()){
+    //    var currentToken = tokenList.last().tokenString
+    //}
 
     androidx.navigation.compose.NavHost(
         navController = navController,
@@ -36,6 +54,7 @@ fun NavHost(
                 viewModel = RaionAPIViewModel,
                 postRegister = { RaionAPIViewModel.postRegister(it[0], it[1], it[2], it[3]) },
                 postLogin = { RaionAPIViewModel.postLogin(it[0], it[1]) }
+
             )
         }
 

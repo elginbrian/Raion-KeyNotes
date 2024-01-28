@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -47,8 +48,14 @@ fun Notes(
     viewModel: RaionAPIViewModel,
 ){
     val notes = viewModel.getNote.value.data
-    val note0Id: String
-    val loginResponse = viewModel.postLoginResponse
+    //var tokenList = viewModel.tokenlist.collectAsState().value
+    var currentToken: String
+
+    //if(!tokenList.isNullOrEmpty()){
+    //    currentToken = tokenList.last().tokenString
+    //} else {
+    //    currentToken = "NULL"
+    //}
 
     if(viewModel.getNote.value.loading == true){
         CircularProgressIndicator()
@@ -57,7 +64,7 @@ fun Notes(
     } else {
         Log.d("Notes at Component.kt Log.d", "Note: Message -> ${notes?.message} | Count: -> ${notes?.count}")
         Log.d("Notes at Component.kt Log.d", "Note: Data -> ${notes?.data.toString()}")
-        Log.d("Notes at component.kt Log.d", "Login Response -> ${loginResponse.toString()}")
+        //Log.d("Notes at Component.kt Log.d", "Current token: $currentToken")
     }
 }
 

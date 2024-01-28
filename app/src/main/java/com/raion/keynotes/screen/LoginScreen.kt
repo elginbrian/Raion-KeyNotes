@@ -1,5 +1,7 @@
 package com.raion.keynotes.screen
 
+import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,7 +38,9 @@ import androidx.navigation.NavController
 import com.raion.keynotes.R
 import com.raion.keynotes.component.BarButton
 import com.raion.keynotes.component.RaionTextField
+import com.raion.keynotes.model.PostLoginResponse
 import com.raion.keynotes.navigation.NavEnum
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
@@ -44,6 +49,7 @@ fun LoginScreen(
     postRegister: (List<String>) -> Unit,
     postLogin: (List<String>) -> Unit
 ){
+    val context = LocalContext.current as Activity
     var loginFlag = remember {
         mutableStateOf("1")
     }
@@ -218,10 +224,11 @@ fun LoginScreen(
                 if (preventFlag.value == false) {
                     if(loginFlag.value == "1"){
                         postLogin(listOf(nim.value, password.value))
+
                         nim.value = ""
                         password.value = ""
                         navController.navigate(route = NavEnum.HomeScreen.name)
-
+                        context.recreate()
                     } else {
                         postRegister(listOf(name.value, nim.value, password.value, description.value))
                         name.value = ""
@@ -229,6 +236,7 @@ fun LoginScreen(
                         password.value = ""
                         description.value = ""
                         navController.navigate(route = NavEnum.HomeScreen.name)
+                        context.recreate()
                     }
                 }
             }

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.raion.keynotes.model.NoteClass
+import com.raion.keynotes.model.TokenClass
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -28,4 +29,25 @@ interface NoteDAO {
 
     @Delete
     suspend fun deleteNote(NoteClass: NoteClass)
+}
+
+@Dao
+interface TokenDAO{
+    @Query("SELECT * FROM token_table LIMIT 1")
+    fun getToken(): Flow<TokenClass?>
+
+    @Query("SELECT * FROM token_table WHERE tokenId = :tokenId LIMIT 1")
+    suspend fun getTokenById(tokenId: String): TokenClass?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(token: TokenClass)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun update(token: TokenClass)
+
+    @Query("DELETE FROM token_table")
+    suspend fun deleteAll()
+
+    @Delete
+    suspend fun deleteToken(token: TokenClass)
 }

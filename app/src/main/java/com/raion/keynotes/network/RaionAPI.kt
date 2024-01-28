@@ -11,10 +11,11 @@ import com.raion.keynotes.model.PostRegisterRequest
 import com.raion.keynotes.model.PostRegisterResponse
 import com.raion.keynotes.model.PutNoteRequest
 import com.raion.keynotes.model.PutNoteResponse
-import com.raion.keynotes.util.Token
+import com.raion.keynotes.repository.RaionAPIRepository
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -23,34 +24,47 @@ import retrofit2.http.Path
 interface RaionAPI {
     //GET
     @GET("note")
-    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
-    suspend fun getNote(): GetNoteResponse
+    suspend fun getNote(
+        @Header("Authorization") token: String
+    ): GetNoteResponse
 
     @GET("user")
-    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
-    suspend fun getUserDetail() : GetUserDetailResponse
+    suspend fun getUserDetail(
+        @Header("Authorization") token: String
+    ) : GetUserDetailResponse
 
 
     // POST
     @POST("note")
-    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
-    suspend fun postNote(@Body request: PostNoteRequest): PostNoteResponse
+    suspend fun postNote(
+        @Header("Authorization") token: String,
+        @Body request: PostNoteRequest
+    ): PostNoteResponse
 
     @POST("register")
-    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
-    suspend fun postRegister(@Body request: PostRegisterRequest): PostRegisterResponse
+    suspend fun postRegister(
+        @Header("Authorization") token: String,
+        @Body request: PostRegisterRequest
+    ): PostRegisterResponse
 
     @POST("login")
-    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
-    suspend fun postLogin(@Body request: PostLoginRequest): PostLoginResponse
+    suspend fun postLogin(
+        @Header("Authorization") token: String,
+        @Body request: PostLoginRequest
+    ): PostLoginResponse
 
     //PUT
     @PUT("note/{noteId}")
-    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
-    suspend fun putNote(@Path("noteId") noteId: String, @Body request: PutNoteRequest): PutNoteResponse
+    suspend fun putNote(
+        @Path("noteId") noteId: String,
+        @Header("Authorization") token: String,
+        @Body request: PutNoteRequest
+    ): PutNoteResponse
 
     //DELETE
     @DELETE("note/{noteId}")
-    @Headers("Authorization: Bearer ${Token.TOKEN_STRING}")
-    suspend fun deleteNote(@Path("noteId") noteId: String): DeleteNoteResponse
+    suspend fun deleteNote(
+        @Header("Authorization") token: String,
+        @Path("noteId") noteId: String
+    ): DeleteNoteResponse
 }
