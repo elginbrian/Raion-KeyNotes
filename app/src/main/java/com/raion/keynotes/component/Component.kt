@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,16 +47,12 @@ import com.raion.keynotes.screen.RaionAPIViewModel
 @Composable
 fun Notes(
     viewModel: RaionAPIViewModel,
+    loadingValue: (Boolean) -> Unit
 ){
     val notes = viewModel.getNote.value.data
-    //var tokenList = viewModel.tokenlist.collectAsState().value
     var currentToken: String
 
-    //if(!tokenList.isNullOrEmpty()){
-    //    currentToken = tokenList.last().tokenString
-    //} else {
-    //    currentToken = "NULL"
-    //}
+    viewModel.getNote.value.loading?.let { loadingValue(it) }
 
     if(viewModel.getNote.value.loading == true){
         CircularProgressIndicator()
@@ -70,13 +67,16 @@ fun Notes(
 
 @Composable
 fun UserDetail(
-    viewModel: RaionAPIViewModel
+    viewModel: RaionAPIViewModel,
+    loadingValue: (Boolean) -> Unit
 ){
     val userDetail = viewModel.getUserDetail.value.data
     var userId: String = ""
     var userName: String = ""
     var password: String = ""
     var salt: String = ""
+
+    viewModel.getUserDetail.value.loading?.let { loadingValue(it) }
 
     if(viewModel.getNote.value.loading == true){
         CircularProgressIndicator()
@@ -91,17 +91,18 @@ fun UserDetail(
 @Composable
 fun NoteCard(
     noteItem: NoteItem,
+    lastIndex: Boolean,
     trigger: (String) -> Unit
 ){
     var noteColor: Color = MaterialTheme.colorScheme.onPrimary
     if(noteItem.description.contains("#NoteColorRed")){
-        noteColor = Color(250, 110, 80)
+        noteColor = Color(250, 175, 175)
     } else if(noteItem.description.contains("#NoteColorGreen")){
-        noteColor = Color(185, 250, 80)
+        noteColor = Color(220, 250, 175)
     } else if (noteItem.description.contains("#NoteColorBlue")){
-        noteColor = Color(80, 120, 250)
+        noteColor = Color(175, 210, 250)
     } else if (noteItem.description.contains("#NoteColorViolet")){
-        noteColor = Color(170, 80, 250)
+        noteColor = Color(210, 175, 250)
     }
 
     Card(
@@ -139,7 +140,7 @@ fun NoteCard(
                     Text(text = noteItem.title, fontSize = 18.sp ,fontWeight = FontWeight(500), color = Color.White, maxLines = 1)
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = noteItem.updatedAt, fontSize = 12.sp, color = Color.White, maxLines = 1)
+                        //Text(text = noteItem.updatedAt, fontSize = 12.sp, color = Color.White, maxLines = 1)
                     }
                 }
             }
@@ -151,6 +152,9 @@ fun NoteCard(
                 Text(text = noteItem.description, fontSize = 12.sp, maxLines = 8, textAlign = TextAlign.Justify, lineHeight = 13.sp)
             }
         }
+    }
+    if(lastIndex == true){
+        Spacer(modifier = Modifier.padding(80.dp))
     }
 }
 

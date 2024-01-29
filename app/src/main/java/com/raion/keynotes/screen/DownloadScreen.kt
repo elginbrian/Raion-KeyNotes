@@ -23,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -44,6 +45,7 @@ import com.raion.keynotes.component.BarButton
 import com.raion.keynotes.component.DownloadedNoteCard
 import com.raion.keynotes.component.NoteCard
 import com.raion.keynotes.component.RaionTextField
+import com.raion.keynotes.component.UserDetail
 import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.NoteItem
 import com.raion.keynotes.navigation.NavEnum
@@ -58,6 +60,11 @@ fun DownloadScreen(
     deleteNote: (String) -> Unit,
     noteList: List<NoteClass>
 ){
+    var userDetailLoadingValue: Boolean = false
+    UserDetail(viewModel = RaionAPIViewModel){
+        userDetailLoadingValue = it
+    }
+
     var displayForm = remember {
         mutableStateOf(false)
     }
@@ -73,8 +80,10 @@ fun DownloadScreen(
 
     var userDetail = RaionAPIViewModel.getUserDetail.value.data
     var userName: String = ""
+    var userNameSplit: List<String> = listOf("[NO", "INTERNET]")
     if(userDetail != null){
         userName = userDetail.data.name
+        userNameSplit = userName.split(" ")
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(30,30,30, 255)) {
@@ -96,9 +105,15 @@ fun DownloadScreen(
                             modifier = Modifier.fillMaxHeight(),
                             verticalArrangement = Arrangement.Bottom
                         ) {
-                            Text(text = "Lorem Ipsum", color = Color.White, fontSize = 15.sp)
-                            Spacer(modifier = Modifier.padding(1.dp))
-                            Text(text = "Hi, ${userName}👋", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+                            if(userDetailLoadingValue == false){
+                                Text(text = "Downloaded Notes", color = Color.White, fontSize = 15.sp)
+                                Spacer(modifier = Modifier.padding(1.dp))
+                                Text(text = "Hi, ${userNameSplit[0]} ${userNameSplit[1]}👋", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+                            } else {
+                                Text(text = "Downloaded Notes", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                                Spacer(modifier = Modifier.padding(1.dp))
+                                LinearProgressIndicator(color = Color(255,199,0,255))
+                            }
                         }
                         Image(painter = painterResource(id = R.drawable.raion), contentDescription = "Raion", modifier = Modifier.padding(top = 12.dp, start = 5.dp))
                     }
@@ -114,6 +129,8 @@ fun DownloadScreen(
                     elevation = CardDefaults.cardElevation(10.dp)
                 ) {
                     Scaffold(
+                        contentColor = Color(65,65,65),
+                        containerColor = Color(65,65,65),
                         content = {
                             Column(modifier = Modifier
                                 .fillMaxWidth()
@@ -123,8 +140,6 @@ fun DownloadScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                Text(text = "Downloaded Notes", fontSize = 28.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.inverseSurface)
-                                Spacer(modifier = Modifier.padding(5.dp))
 
                                 LazyColumn(modifier = Modifier.fillMaxSize()){
                                     items(noteList){noteItem ->

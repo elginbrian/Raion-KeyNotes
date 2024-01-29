@@ -88,6 +88,20 @@ data class PutNoteRequest(
     @SerializedName("description") val description: String
 )
 
+// PUT USER DETAIL
+data class PutUserDetailResponse(
+    @SerializedName("error")   val error: Boolean,
+    @SerializedName("status")  val status: String,
+    @SerializedName("message") val message: String,
+    @SerializedName("data")    val data: String
+)
+
+data class PutUserDetailRequest(
+    @SerializedName("name")        val name: String,
+    @SerializedName("password")    val password: String,
+    @SerializedName("description") val description: String
+)
+
 // DELETE NOTE
 data class DeleteNoteResponse(
     @SerializedName("error")   val error: Boolean,

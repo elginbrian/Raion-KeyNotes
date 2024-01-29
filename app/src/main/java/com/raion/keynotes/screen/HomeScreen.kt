@@ -21,14 +21,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,15 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.raion.keynotes.R
-import com.raion.keynotes.component.BarButton
 import com.raion.keynotes.component.NoteCard
 import com.raion.keynotes.component.Notes
-import com.raion.keynotes.component.RaionTextField
 import com.raion.keynotes.component.UserDetail
 import com.raion.keynotes.model.NoteItem
 import com.raion.keynotes.navigation.NavEnum
@@ -56,12 +54,18 @@ import com.raion.keynotes.navigation.NavEnum
 fun HomeScreen(
     viewModel: RaionAPIViewModel,
     navController: NavController,
-    addNote: (Pair<String, String>) -> Unit,
+    postNote: (Pair<String, String>) -> Unit,
     deleteNote: (String) -> Unit
 ){
-    // For testing
-    Notes(viewModel = viewModel)
-    UserDetail(viewModel = viewModel)
+    var notesLoadingValue: Boolean = false
+    var userDetailLoadingValue: Boolean = false
+
+    Notes(viewModel = viewModel){
+        notesLoadingValue = it
+    }
+    UserDetail(viewModel = viewModel){
+        userDetailLoadingValue = it
+    }
 
     var preventFlag = remember {
         mutableStateOf(false)
@@ -72,30 +76,28 @@ fun HomeScreen(
     var newNoteDescription = remember {
         mutableStateOf("")
     }
-    
+    var countDown = 0
     var noteRawList = viewModel.getNote.value.data
 
     var noteList: List<NoteItem>
 
     if (noteRawList != null) {
         noteList = noteRawList.data
+        countDown = noteList.size
     } else {
         noteList = listOf()
     }
 
     var userDetail = viewModel.getUserDetail.value.data
 
-    var userId: String = ""
     var userName: String = ""
-    var password: String = ""
-    var salt: String = ""
 
+    var userNameSplit: List<String> = listOf("[NO","INTERNET]")
     if(userDetail != null){
-        userId   = userDetail.data.id
         userName = userDetail.data.name
-        password = userDetail.data.password
-        salt     = userDetail.data.salt
+        userNameSplit = userName.split(" ")
     }
+
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(30,30,30, 255)) {
         Scaffold(
@@ -116,9 +118,16 @@ fun HomeScreen(
                             modifier = Modifier.fillMaxHeight(),
                             verticalArrangement = Arrangement.Bottom
                         ) {
-                            Text(text = "Lorem Ipsum", color = Color.White, fontSize = 15.sp)
-                            Spacer(modifier = Modifier.padding(1.dp))
-                            Text(text = "Hi, ${userName}👋", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+
+                            if(userDetailLoadingValue == false){
+                                Text(text = "#RawrNotes!", color = Color.White, fontSize = 15.sp)
+                                Spacer(modifier = Modifier.padding(1.dp))
+                                Text(text = "Hi, ${userNameSplit[0]} ${userNameSplit[1]}👋", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+                            } else {
+                                Text(text = "#RawrNotes!", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                                Spacer(modifier = Modifier.padding(1.dp))
+                                LinearProgressIndicator(color = Color(255,199,0,255))
+                            }
                         }
                         Image(painter = painterResource(id = R.drawable.raion), contentDescription = "Raion", modifier = Modifier.padding(top = 12.dp, start = 5.dp))
                     }
@@ -134,24 +143,27 @@ fun HomeScreen(
                     elevation = CardDefaults.cardElevation(10.dp)
                 ) {
                     Scaffold(
+                        contentColor = Color(65,65,65),
+                        containerColor = Color(65,65,65),
                         content = {
                             Column(modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight(0.92f)
-                                .padding(15.dp)
-                                .padding(top = 22.dp),
+                                .padding(15.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                Text(text = "#RawrNotes", fontSize = 28.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.inverseSurface)
-                                Spacer(modifier = Modifier.padding(5.dp))
 
-                                if(noteRawList != null){
+                                if(noteRawList != null || noteList.isNotEmpty()){
                                     LazyColumn(modifier = Modifier.fillMaxSize()){
                                         items(noteList){noteItem ->
-                                            NoteCard(noteItem = noteItem){noteId ->
+                                            countDown -= 1
+                                            var lastIndex = false
+                                            if(countDown == 0){
+                                                lastIndex = true
+                                            }
+                                            NoteCard(noteItem = noteItem, lastIndex = lastIndex){noteId ->
                                                 if(noteId.isNotEmpty()){
-                                                    //deleteNote(noteItem.noteId)
                                                     navController.navigate(route = NavEnum.NoteScreen.name+"/$noteId")
                                                 }
                                             }
@@ -159,7 +171,15 @@ fun HomeScreen(
                                     }
 
                                 } else {
-
+                                    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
+                                        if(notesLoadingValue == true){
+                                            CircularProgressIndicator(color = Color(255,199,0,255))
+                                        } else {
+                                            Image(painter = painterResource(id = R.drawable.emptybox), contentDescription = "empty box", modifier = Modifier.fillMaxSize(0.4f))
+                                            Text(text = "You're currently don't have any notes", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.inverseSurface)
+                                            Spacer(modifier = Modifier.padding(80.dp))
+                                        }
+                                    }
                                 }
                             }
                         },
@@ -195,7 +215,7 @@ fun HomeScreen(
                                             modifier = Modifier
                                                 .width(85.dp)
                                                 .height(75.dp)
-                                                .clickable { navController.navigate(route = NavEnum.HomeScreen.name) },
+                                                .clickable { },
                                             shape = CircleShape,
                                             colors = CardDefaults.cardColors(Color(30,30,30, 255)),
                                             elevation = CardDefaults.cardElevation(5.dp),

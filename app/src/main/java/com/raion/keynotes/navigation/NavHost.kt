@@ -1,19 +1,16 @@
 package com.raion.keynotes.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.raion.keynotes.model.NoteClass
-import com.raion.keynotes.model.PostLoginResponse
-import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.screen.DownloadScreen
 import com.raion.keynotes.screen.HomeScreen
 import com.raion.keynotes.screen.LoginScreen
@@ -22,12 +19,6 @@ import com.raion.keynotes.screen.CreateNewNoteScreen
 import com.raion.keynotes.screen.NoteScreen
 import com.raion.keynotes.screen.ProfileScreen
 import com.raion.keynotes.screen.RaionAPIViewModel
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -48,7 +39,19 @@ fun NavHost(
         navController = navController,
         startDestination = NavEnum.LoginScreen.name
     ) {
-        composable(NavEnum.LoginScreen.name){
+        composable(
+            NavEnum.LoginScreen.name, enterTransition = {
+                return@composable fadeIn(tween(1000))
+            }, exitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            }, popEnterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
+        ){
             LoginScreen(
                 navController = navController,
                 viewModel = RaionAPIViewModel,
@@ -58,18 +61,37 @@ fun NavHost(
             )
         }
 
-        composable(NavEnum.HomeScreen.name){
+        composable(
+            NavEnum.HomeScreen.name, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
+        ){
             HomeScreen(
                 viewModel = RaionAPIViewModel,
                 navController = navController,
-                addNote = { RaionAPIViewModel.postNote(it.first, it.second) },
+                postNote = { RaionAPIViewModel.postNote(it.first, it.second) },
                 deleteNote = { RaionAPIViewModel.deleteNote(it)}
             )
         }
 
         composable(
             NavEnum.NoteScreen.name+"/{noteId}",
-            arguments = listOf(navArgument(name = "noteId"){type = NavType.StringType})
+            arguments = listOf(navArgument(name = "noteId"){type = NavType.StringType}),
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
         ){
             backStackEntry ->
             NoteScreen(
@@ -87,7 +109,18 @@ fun NavHost(
             )
         }
 
-        composable(NavEnum.CreateNewNoteScreen.name){
+        composable(
+            NavEnum.CreateNewNoteScreen.name,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
+        ){
             CreateNewNoteScreen(
                 navController = navController,
                 viewModel = RaionAPIViewModel,
@@ -95,14 +128,37 @@ fun NavHost(
             )
         }
 
-        composable(NavEnum.ProfileScreen.name){
+        composable(
+            NavEnum.ProfileScreen.name,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
+        ){
             ProfileScreen(
                 navController = navController,
-                viewModel = RaionAPIViewModel
+                viewModel = RaionAPIViewModel,
+                putUserDetail = { RaionAPIViewModel.putUserDetail(it[0], it[1], it[2]) }
             )
         }
 
-        composable(NavEnum.DownloadScreen.name){
+        composable(
+            NavEnum.DownloadScreen.name,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
+        ){
             DownloadScreen(
                 noteDAOViewModel = NoteDAOViewModel,
                 navController = navController,

@@ -11,6 +11,8 @@ import com.raion.keynotes.model.PostRegisterRequest
 import com.raion.keynotes.model.PostRegisterResponse
 import com.raion.keynotes.model.PutNoteRequest
 import com.raion.keynotes.model.PutNoteResponse
+import com.raion.keynotes.model.PutUserDetailRequest
+import com.raion.keynotes.model.PutUserDetailResponse
 import com.raion.keynotes.repository.RaionAPIRepository
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -60,6 +62,12 @@ interface RaionAPI {
         @Header("Authorization") token: String,
         @Body request: PutNoteRequest
     ): PutNoteResponse
+
+    @PUT("user")
+    suspend fun putUserDetail(
+        @Header("Authorization") token: String,
+        @Body request: PutUserDetailRequest
+    ): PutUserDetailResponse
 
     //DELETE
     @DELETE("note/{noteId}")

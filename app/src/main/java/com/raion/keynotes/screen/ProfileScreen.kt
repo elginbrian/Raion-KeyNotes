@@ -26,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -48,6 +49,7 @@ import androidx.navigation.NavController
 import com.raion.keynotes.R
 import com.raion.keynotes.component.BarButton
 import com.raion.keynotes.component.RaionTextField
+import com.raion.keynotes.component.UserDetail
 import com.raion.keynotes.model.NoteItem
 import com.raion.keynotes.navigation.NavEnum
 
@@ -56,8 +58,14 @@ import com.raion.keynotes.navigation.NavEnum
 @Composable
 fun ProfileScreen(
     viewModel: RaionAPIViewModel,
-    navController: NavController
+    navController: NavController,
+    putUserDetail: (List<String>) -> Unit
 ) {
+    var userDetailLoadingValue: Boolean = false
+    UserDetail(viewModel = viewModel){
+        userDetailLoadingValue = it
+    }
+
     val context = LocalContext.current as Activity
     var displayForm = remember {
         mutableStateOf(false)
@@ -68,22 +76,25 @@ fun ProfileScreen(
     var newPassword = remember {
         mutableStateOf("")
     }
+    var newDescription = remember {
+        mutableStateOf("")
+    }
     var preventFlag = remember {
         mutableStateOf(false)
     }
 
     var userDetail = viewModel.getUserDetail.value.data
 
-    var userId: String = ""
-    var userName: String = ""
-    var password: String = ""
-    var description: String = ""
+    var userId: String = "NO INTERNET"
+    var userName: String = "NO INTERNET"
+    var password: String = "NO INTERNET"
+    var userNameSplit: List<String> = listOf("[NO", "INTERNET]")
 
     if(userDetail != null){
         userId   = userDetail.data.id
         userName = userDetail.data.name
         password = userDetail.data.password
-        description = userDetail.message
+        userNameSplit = userName.split(" ")
     }
 
     var noteRawList = viewModel.getNote.value.data
@@ -115,9 +126,16 @@ fun ProfileScreen(
                             modifier = Modifier.fillMaxHeight(),
                             verticalArrangement = Arrangement.Bottom
                         ) {
-                            Text(text = "Lorem Ipsum", color = Color.White, fontSize = 15.sp)
-                            Spacer(modifier = Modifier.padding(1.dp))
-                            Text(text = "Hi, ${userName}👋", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+
+                            if(userDetailLoadingValue == false){
+                                Text(text = "Profile", color = Color.White, fontSize = 15.sp)
+                                Spacer(modifier = Modifier.padding(1.dp))
+                                Text(text = "Hi, ${userNameSplit[0]} ${userNameSplit[1]}👋", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.SemiBold)
+                            } else {
+                                Text(text = "#Profile", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                                Spacer(modifier = Modifier.padding(1.dp))
+                                LinearProgressIndicator(color = Color(255,199,0,255))
+                            }
                         }
                         Image(
                             painter = painterResource(id = R.drawable.raion),
@@ -137,6 +155,8 @@ fun ProfileScreen(
                     elevation = CardDefaults.cardElevation(10.dp)
                 ) {
                     Scaffold(
+                        contentColor = Color(65,65,65),
+                        containerColor = Color(65,65,65),
                         content = {
                             Column(
                                 modifier = Modifier
@@ -148,10 +168,10 @@ fun ProfileScreen(
                                 verticalArrangement = Arrangement.Top
                             ) {
                                 Text(
-                                    text = "Profile",
+                                    text = "Your Profile",
                                     fontSize = 28.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.inverseSurface
+                                    color = Color.White
                                 )
                                 Spacer(modifier = Modifier.padding(5.dp))
 
@@ -159,7 +179,7 @@ fun ProfileScreen(
                                     Card(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(180.dp),
+                                            .height(240.dp),
                                         shape = RoundedCornerShape(20.dp),
                                         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
                                         elevation = CardDefaults.cardElevation(5.dp),
@@ -180,7 +200,7 @@ fun ProfileScreen(
                                                     }
                                                 }
                                             )
-                                            Spacer(modifier = Modifier.padding(5.dp))
+                                            Spacer(modifier = Modifier.padding(4.dp))
                                             RaionTextField(
                                                 keyboardType = KeyboardType.Text,
                                                 text = newPassword.value,
@@ -188,11 +208,24 @@ fun ProfileScreen(
                                                 onTextChange = {
                                                     if ((it.all { char -> char.isDefined() || char.isWhitespace() })) {
                                                         newPassword.value = it
+                                                        preventFlag.value = false
+                                                    }
+                                                }
+                                            )
+                                            Spacer(modifier = Modifier.padding(4.dp))
+                                            RaionTextField(
+                                                keyboardType = KeyboardType.Text,
+                                                text = newDescription.value,
+                                                label = "Insert New Description",
+                                                onTextChange = {
+                                                    if ((it.all { char -> char.isDefined() || char.isWhitespace() })) {
+                                                        newDescription.value = it
+                                                        preventFlag.value = false
                                                     }
                                                 }
                                             )
                                             Spacer(modifier = Modifier.padding(3.dp))
-                                            if (newUserName.value.equals("") || newPassword.value.equals("")) {
+                                            if (newUserName.value.equals("") || newPassword.value.equals("") || newDescription.value.equals("")) {
                                                 preventFlag.value = true
                                             }
                                         }
@@ -202,24 +235,22 @@ fun ProfileScreen(
                                     BarButton(
                                         text = "Update Profile",
                                         color =
-                                        //if (preventFlag.value == false) {
-                                        //    Color(255, 199, 0, 255)
-                                        //} else {
+                                        if (preventFlag.value == false) {
+                                            Color(255, 199, 0, 255)
+                                        } else {
                                             Color(101, 100, 102)
-                                        //}
-                                    ) {
-                                        //if (preventFlag.value == false) {
-                                        //    addNote(
-                                        //        Pair(
-                                        //            newNoteTitle.value,
-                                        //            newNoteDescription.value
-                                        //        )
-                                        //    )
-                                        //    newNoteTitle.value = ""
-                                        //    newNoteDescription.value = ""
-                                        //    displayForm.value = !displayForm.value
+                                        }
 
-                                        //}
+                                    ) {
+                                        if (preventFlag.value == false) {
+                                            putUserDetail(listOf(newUserName.value, newPassword.value, newDescription.value))
+
+                                            newUserName.value = ""
+                                            newPassword.value = ""
+                                            newDescription.value = ""
+                                            displayForm.value = !displayForm.value
+                                            navController.navigate(route = NavEnum.ProfileScreen.name)
+                                        }
                                     }
 
                                 } else {

@@ -11,6 +11,7 @@ import com.raion.keynotes.model.GetUserDetailResponse
 import com.raion.keynotes.model.PostLoginRequest
 import com.raion.keynotes.model.PostRegisterRequest
 import com.raion.keynotes.model.PutNoteRequest
+import com.raion.keynotes.model.PutUserDetailRequest
 import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.network.RaionAPI
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private val tokenDAO: TokenDAO){
     private val getNoteException       = DataExceptionHandling<GetNoteResponse, Boolean, Exception>()
     private val getUserDetailException = DataExceptionHandling<GetUserDetailResponse, Boolean, Exception>()
+
     suspend fun retrieveToken(): String {
         val tokenClass = tokenDAO.getToken().firstOrNull()
         return "Bearer " + tokenClass?.tokenString
@@ -103,6 +105,20 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
         val putNoteRequest = PutNoteRequest(title, description)
         try {
             val response = api.putNote(noteId = noteId, request = putNoteRequest, token = retrieveToken())
+            if(!response.error){
+                Log.d("Repo sucsess", "Response: ${response.data}")
+            } else {
+                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+            }
+        } catch (e: Exception){
+            Log.d("Repo exception", "${e.printStackTrace()}")
+        }
+    }
+
+    suspend fun putUserDetailRequest(name: String, password: String, description: String){
+        val putUserDetailRequest = PutUserDetailRequest(name, password, description)
+        try {
+            val response = api.putUserDetail(request = putUserDetailRequest, token = retrieveToken())
             if(!response.error){
                 Log.d("Repo sucsess", "Response: ${response.data}")
             } else {

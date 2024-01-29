@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,9 +66,9 @@ fun CreateNewNoteScreen(
         mutableStateOf("Insert Title Here")
     }
     var newNoteDescription = remember {
-        mutableStateOf("Insert Description Here!")
+        mutableStateOf("Insert Description Here!\n(Tap the arrow back button to save)")
     }
-    var noteColor: Color = MaterialTheme.colorScheme.onPrimary
+    var noteColor: Color = Color.White
     if(newNoteDescription.value.contains("#NoteColorRed")){
         noteColor = Color(250, 110, 80)
     } else if(newNoteDescription.value.contains("#NoteColorGreen")){
@@ -97,7 +100,6 @@ fun CreateNewNoteScreen(
                             imageVector = Icons.Default.ArrowBack,
                             tint = Color.White,
                             modifier = Modifier
-                                .padding(bottom = 6.dp)
                                 .clickable {
                                     postNote(Pair(newNoteTitle.value, newNoteDescription.value))
                                     navController.navigate(route = NavEnum.HomeScreen.name)
@@ -118,7 +120,7 @@ fun CreateNewNoteScreen(
 
                             },
                             singleLine = false,
-                            textStyle = MaterialTheme.typography.titleLarge,
+                            textStyle = TextStyle(color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.SemiBold),
                             modifier = Modifier.fillMaxHeight()
                         )
                     }
@@ -146,12 +148,12 @@ fun CreateNewNoteScreen(
                             ) {
                                 Column(
                                     modifier = Modifier
-                                    //.fillMaxSize()
+
                                 ) {
                                     Column(modifier = Modifier
                                         .fillMaxSize()
                                         .padding(10.dp)
-                                        .clickable { navBarFlag.value = "4" }
+                                        .verticalScroll(rememberScrollState())
                                     ) {
                                         TransparentTextField(
                                             text = newNoteDescription.value,
@@ -160,11 +162,9 @@ fun CreateNewNoteScreen(
                                                     newNoteDescription.value = it
                                                 }
                                             },
-                                            onFocusChange = {
-
-                                            },
+                                            onFocusChange = {},
                                             singleLine = false,
-                                            textStyle = MaterialTheme.typography.labelLarge,
+                                            textStyle = TextStyle(color = Color(30,30,30, 255), fontSize = 16.sp),
                                             modifier = Modifier.fillMaxHeight()
                                         )
                                     }
@@ -206,11 +206,28 @@ fun CreateNewNoteScreen(
                                                 .height(35.dp)
                                                 .clickable {
                                                     colorFlag.value = "1"
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorRed", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorGreen", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorBlue", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorViolet", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value + "\n#NoteColorRed"
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorRed",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorGreen",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorBlue",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorViolet",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value + "\n#NoteColorRed"
                                                 },
                                             shape = CircleShape,
                                             colors = CardDefaults.cardColors(
@@ -236,11 +253,28 @@ fun CreateNewNoteScreen(
                                                 .height(35.dp)
                                                 .clickable {
                                                     colorFlag.value = "2"
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorRed", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorGreen", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorBlue", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorViolet", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value + "\n#NoteColorGreen"
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorRed",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorGreen",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorBlue",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorViolet",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value + "\n#NoteColorGreen"
                                                 },
                                             shape = CircleShape,
                                             colors = CardDefaults.cardColors(
@@ -266,11 +300,28 @@ fun CreateNewNoteScreen(
                                                 .height(35.dp)
                                                 .clickable {
                                                     colorFlag.value = "3"
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorRed", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorGreen", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorBlue", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorViolet", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value + "\n#NoteColorBlue"
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorRed",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorGreen",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorBlue",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorViolet",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value + "\n#NoteColorBlue"
                                                 },
                                             shape = CircleShape,
                                             colors = CardDefaults.cardColors(
@@ -296,11 +347,28 @@ fun CreateNewNoteScreen(
                                                 .height(35.dp)
                                                 .clickable {
                                                     colorFlag.value = "4"
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorRed", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorGreen", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorBlue", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value.replace("#NoteColorViolet", "\b\b")
-                                                    newNoteDescription.value = newNoteDescription.value + "\n#NoteColorViolet"
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorRed",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorGreen",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorBlue",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value.replace(
+                                                            "#NoteColorViolet",
+                                                            "\b\b"
+                                                        )
+                                                    newNoteDescription.value =
+                                                        newNoteDescription.value + "\n#NoteColorViolet"
                                                 },
                                             shape = CircleShape,
                                             colors = CardDefaults.cardColors(
