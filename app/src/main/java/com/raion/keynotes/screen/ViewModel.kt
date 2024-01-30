@@ -10,6 +10,7 @@ import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.GetNoteResponse
 import com.raion.keynotes.model.GetUserDetailResponse
 import com.raion.keynotes.model.PostLoginResponse
+import com.raion.keynotes.model.PostNoteResponse
 import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.repository.NoteDAORepository
 import com.raion.keynotes.repository.RaionAPIRepository
@@ -18,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -41,7 +43,7 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
                     if(getNote.value.data.toString().isNotEmpty()){
                         getNote.value.loading = false
                     }
-                    delay(1000)
+                    delay(60000)
                 }
             }
         }
@@ -63,10 +65,24 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
                 if(getUserDetail.value.data.toString().isNotEmpty()){
                     getUserDetail.value.loading = false
                 }
-                delay(1000)
+                delay(60000)
             }
         }
     }
+
+    val _token = MutableStateFlow<TokenClass?>(null)
+    val token: StateFlow<TokenClass?> = _token.asStateFlow()
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getToken().distinctUntilChanged().collect { token ->
+                if (token.toString().isNullOrEmpty()) {
+                } else {
+                    _token.value = token
+                }
+            }
+        }
+    }
+
 
     fun postNote(title: String, description: String)                                   = viewModelScope.launch { repository.postNoteRequest(title, description) }
     fun postRegister(nim: String, name: String, password: String, description: String) = viewModelScope.launch { repository.registerRequest(nim, name, password, description) }

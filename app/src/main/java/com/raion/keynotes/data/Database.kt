@@ -10,7 +10,7 @@ abstract class NoteDatabase: RoomDatabase(){
     abstract fun NoteDAO(): NoteDAO
 }
 
-@Database(entities = [TokenClass::class], version = 4, exportSchema = false)
+@Database(entities = [TokenClass::class], version = 5, exportSchema = false)
 abstract class TokenDatabase: RoomDatabase(){
     abstract fun TokenDAO(): TokenDAO
 }

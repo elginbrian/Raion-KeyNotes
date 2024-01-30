@@ -70,13 +70,13 @@ fun CreateNewNoteScreen(
     }
     var noteColor: Color = Color.White
     if(newNoteDescription.value.contains("#NoteColorRed")){
-        noteColor = Color(250, 110, 80)
+        noteColor = Color(250, 175, 175)
     } else if(newNoteDescription.value.contains("#NoteColorGreen")){
-        noteColor = Color(185, 250, 80)
+        noteColor = Color(220, 250, 175)
     } else if (newNoteDescription.value.contains("#NoteColorBlue")){
-        noteColor = Color(80, 120, 250)
+        noteColor = Color(175, 210, 250)
     } else if (newNoteDescription.value.contains("#NoteColorViolet")){
-        noteColor = Color(170, 80, 250)
+        noteColor = Color(210, 175, 250)
     }
 
     Surface(modifier = Modifier.fillMaxSize()) {

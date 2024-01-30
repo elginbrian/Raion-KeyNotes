@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,60 +47,27 @@ import com.raion.keynotes.R
 import com.raion.keynotes.component.NoteCard
 import com.raion.keynotes.component.Notes
 import com.raion.keynotes.component.UserDetail
+import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.NoteItem
+import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.navigation.NavEnum
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDateTime
 
-//@Preview
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: RaionAPIViewModel,
     navController: NavController,
-    postNote: (Pair<String, String>) -> Unit,
-    deleteNote: (String) -> Unit
+    noteList: List<NoteItem>,
+    userDetailList: List<String>,
+    notesLoadingValue: Boolean,
+    userDetailLoadingValue: Boolean,
+    getAPIData: (Boolean) -> Unit
 ){
-    var notesLoadingValue: Boolean = false
-    var userDetailLoadingValue: Boolean = false
-
-    Notes(viewModel = viewModel){
-        notesLoadingValue = it
-    }
-    UserDetail(viewModel = viewModel){
-        userDetailLoadingValue = it
-    }
-
-    var preventFlag = remember {
-        mutableStateOf(false)
-    }
-    var newNoteTitle = remember {
-        mutableStateOf("")
-    }
-    var newNoteDescription = remember {
-        mutableStateOf("")
-    }
-    var countDown = 0
-    var noteRawList = viewModel.getNote.value.data
-
-    var noteList: List<NoteItem>
-
-    if (noteRawList != null) {
-        noteList = noteRawList.data
-        countDown = noteList.size
-    } else {
-        noteList = listOf()
-    }
-
-    var userDetail = viewModel.getUserDetail.value.data
-
-    var userName: String = ""
-
-    var userNameSplit: List<String> = listOf("[NO","INTERNET]")
-    if(userDetail != null){
-        userName = userDetail.data.name
-        userNameSplit = userName.split(" ")
-    }
-
+    getAPIData(true)
+    var userNameSplit = userDetailList[0].split(" ")
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(30,30,30, 255)) {
         Scaffold(
@@ -154,19 +124,17 @@ fun HomeScreen(
                                 verticalArrangement = Arrangement.Top
                             ) {
 
-                                if(noteRawList != null || noteList.isNotEmpty()){
+                                if(noteList.isNotEmpty()){
                                     LazyColumn(modifier = Modifier.fillMaxSize()){
                                         items(noteList){noteItem ->
-                                            countDown -= 1
-                                            var lastIndex = false
-                                            if(countDown == 0){
-                                                lastIndex = true
-                                            }
-                                            NoteCard(noteItem = noteItem, lastIndex = lastIndex){noteId ->
+                                            NoteCard(noteItem = noteItem){noteId ->
                                                 if(noteId.isNotEmpty()){
                                                     navController.navigate(route = NavEnum.NoteScreen.name+"/$noteId")
                                                 }
                                             }
+                                        }
+                                        item {
+                                            Spacer(modifier = Modifier.padding(80.dp))
                                         }
                                     }
 
@@ -176,7 +144,7 @@ fun HomeScreen(
                                             CircularProgressIndicator(color = Color(255,199,0,255))
                                         } else {
                                             Image(painter = painterResource(id = R.drawable.emptybox), contentDescription = "empty box", modifier = Modifier.fillMaxSize(0.4f))
-                                            Text(text = "You're currently don't have any notes", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.inverseSurface)
+                                            Text(text = "You're currently don't have any notes", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
                                             Spacer(modifier = Modifier.padding(80.dp))
                                         }
                                     }

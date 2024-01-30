@@ -3,14 +3,24 @@ package com.raion.keynotes.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.raion.keynotes.component.Notes
+import com.raion.keynotes.component.UserDetail
 import com.raion.keynotes.model.NoteClass
+import com.raion.keynotes.model.NoteItem
+import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.screen.DownloadScreen
 import com.raion.keynotes.screen.HomeScreen
 import com.raion.keynotes.screen.LoginScreen
@@ -19,6 +29,9 @@ import com.raion.keynotes.screen.CreateNewNoteScreen
 import com.raion.keynotes.screen.NoteScreen
 import com.raion.keynotes.screen.ProfileScreen
 import com.raion.keynotes.screen.RaionAPIViewModel
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -28,144 +41,201 @@ fun NavHost(
 ){
     val navController  = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
-    var noteList  = NoteDAOViewModel.notelist.collectAsState().value
-    //var tokenList = RaionAPIViewModel.tokenlist.collectAsState().value
 
-    //if(!tokenList.isNullOrEmpty()){
-    //    var currentToken = tokenList.last().tokenString
-    //}
+    var downloadedNoteList    = NoteDAOViewModel.notelist.collectAsState().value
+    var isToken: TokenClass?  = RaionAPIViewModel.token.collectAsState().value
+    var token: TokenClass     = isToken ?: TokenClass("","2006-04-22T12:00:00.000000")
 
-    androidx.navigation.compose.NavHost(
-        navController = navController,
-        startDestination = NavEnum.LoginScreen.name
-    ) {
-        composable(
-            NavEnum.LoginScreen.name, enterTransition = {
-                return@composable fadeIn(tween(1000))
-            }, exitTransition = {
-                return@composable slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                )
-            }, popEnterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                )
-            }
-        ){
-            LoginScreen(
-                navController = navController,
-                viewModel = RaionAPIViewModel,
-                postRegister = { RaionAPIViewModel.postRegister(it[0], it[1], it[2], it[3]) },
-                postLogin = { RaionAPIViewModel.postLogin(it[0], it[1]) }
+    var tokenTimestamp       = token.timeStamp
+    val formatter            = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+    val parseTokenTimeStamp  = LocalDateTime.parse(tokenTimestamp, formatter)
+    val currentTime          = LocalDateTime.now()
+    var durationD            = Duration.between(parseTokenTimeStamp, currentTime)
+    var hoursSinceLastLogin  = durationD.toHours()
 
-            )
+    var noteRawList = RaionAPIViewModel.getNote.value.data
+    var noteList: List<NoteItem>
+
+    noteList =
+        if (noteRawList != null) {
+        noteRawList.data
+        } else {
+            listOf()
         }
 
-        composable(
-            NavEnum.HomeScreen.name, enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                )
-            }, popExitTransition = {
-                return@composable slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                )
-            }
-        ){
-            HomeScreen(
-                viewModel = RaionAPIViewModel,
-                navController = navController,
-                postNote = { RaionAPIViewModel.postNote(it.first, it.second) },
-                deleteNote = { RaionAPIViewModel.deleteNote(it)}
-            )
-        }
+    var userDetail = RaionAPIViewModel.getUserDetail.value.data
 
-        composable(
-            NavEnum.NoteScreen.name+"/{noteId}",
-            arguments = listOf(navArgument(name = "noteId"){type = NavType.StringType}),
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                )
-            }, popExitTransition = {
-                return@composable slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                )
-            }
-        ){
-            backStackEntry ->
-            NoteScreen(
-                navController = navController, backStackEntry.arguments?.getString("noteId"),
-                viewModel = RaionAPIViewModel,
-                deleteNote = { RaionAPIViewModel.deleteNote(it)},
-                downloadNote = { NoteDAOViewModel.addNote(NoteClass(
-                    noteId = it[0],
-                    title = it[1],
-                    description = it[2],
-                    createdAt = it[3],
-                    updatedAt = it[4]))
-                },
-                putNote = { RaionAPIViewModel.putNote(it[0], it[1], it[2]) }
-            )
-        }
+    var userId: String   = "NO INTERNET"
+    var userName: String = "NO INTERNET"
+    var password: String = "NO INTERNET"
 
-        composable(
-            NavEnum.CreateNewNoteScreen.name,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                )
-            }, popExitTransition = {
-                return@composable slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                )
-            }
-        ){
-            CreateNewNoteScreen(
-                navController = navController,
-                viewModel = RaionAPIViewModel,
-                postNote = { RaionAPIViewModel.postNote(it.first, it.second) }
-            )
-        }
+    if(userDetail != null){
+        userId   = userDetail.data.id
+        userName = userDetail.data.name
+        password = userDetail.data.password
+    }
+    var listOfUserDetail = listOf(userName, userId, password)
 
-        composable(
-            NavEnum.ProfileScreen.name,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                )
-            }, popExitTransition = {
-                return@composable slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                )
-            }
-        ){
-            ProfileScreen(
-                navController = navController,
-                viewModel = RaionAPIViewModel,
-                putUserDetail = { RaionAPIViewModel.putUserDetail(it[0], it[1], it[2]) }
-            )
-        }
+    var notesLoadingValue      = false
+    var userDetailLoadingValue = false
+    var getAPIData             = remember {
+        mutableStateOf(false)
+    }
 
-        composable(
-            NavEnum.DownloadScreen.name,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+    if(getAPIData.value == true){
+        Notes(viewModel = RaionAPIViewModel){
+            notesLoadingValue = it
+        }
+        UserDetail(viewModel = RaionAPIViewModel){
+            userDetailLoadingValue = it
+        }
+        getAPIData.value = false
+    }
+
+    Surface(modifier = Modifier.fillMaxSize(), color = Color(30,30,30, 255)) {
+        androidx.navigation.compose.NavHost(
+            navController = navController,
+            startDestination =
+            if(hoursSinceLastLogin <= 23){
+                NavEnum.HomeScreen.name
+            } else {
+                NavEnum.LoginScreen.name
+            }
+        ) {
+            composable(
+                NavEnum.LoginScreen.name, enterTransition = {
+                    return@composable fadeIn(tween(1000))
+                }, exitTransition = {
+                    return@composable slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                    )
+                }, popEnterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                    )
+                }
+            ){
+                LoginScreen(
+                    navController = navController,
+                    postRegister = { RaionAPIViewModel.postRegister(it[0], it[1], it[2], it[3]) },
+                    postLogin = { RaionAPIViewModel.postLogin(it[0], it[1]) }
                 )
-            }, popExitTransition = {
-                return@composable slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+
+            }
+
+            composable(
+                NavEnum.HomeScreen.name, enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                    )
+                }, popExitTransition = {
+                    return@composable slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                    )
+                }
+            ){
+                HomeScreen(
+                    navController = navController,
+                    noteList = noteList,
+                    userDetailList = listOfUserDetail,
+                    notesLoadingValue = notesLoadingValue,
+                    userDetailLoadingValue = userDetailLoadingValue,
+                    getAPIData = { getAPIData.value = it }
                 )
             }
-        ){
-            DownloadScreen(
-                noteDAOViewModel = NoteDAOViewModel,
-                navController = navController,
-                deleteNote = { NoteDAOViewModel.removeNote(it)},
-                noteList = noteList,
-                RaionAPIViewModel = RaionAPIViewModel
-            )
+
+            composable(
+                NavEnum.NoteScreen.name+"/{noteId}",
+                arguments = listOf(navArgument(name = "noteId"){type = NavType.StringType}),
+                enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                    )
+                }, popExitTransition = {
+                    return@composable slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                    )
+                }
+            ){
+                    backStackEntry ->
+                NoteScreen(
+                    navController = navController, backStackEntry.arguments?.getString("noteId"),
+                    viewModel = RaionAPIViewModel,
+                    deleteNote = { RaionAPIViewModel.deleteNote(it)},
+                    downloadNote = { NoteDAOViewModel.addNote(NoteClass(
+                        noteId = it[0],
+                        title = it[1],
+                        description = it[2],
+                        createdAt = it[3],
+                        updatedAt = it[4]))
+                    },
+                    putNote = { RaionAPIViewModel.putNote(it[0], it[1], it[2]) }
+                )
+            }
+
+            composable(
+                NavEnum.CreateNewNoteScreen.name,
+                enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                    )
+                }, popExitTransition = {
+                    return@composable slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                    )
+                }
+            ){
+                CreateNewNoteScreen(
+                    navController = navController,
+                    viewModel = RaionAPIViewModel,
+                    postNote = { RaionAPIViewModel.postNote(it.first, it.second) }
+                )
+            }
+
+            composable(
+                NavEnum.ProfileScreen.name,
+                enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                    )
+                }, popExitTransition = {
+                    return@composable slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                    )
+                }
+            ){
+                ProfileScreen(
+                    navController = navController,
+                    hoursSinceLastLogin = hoursSinceLastLogin,
+                    putUserDetail = { RaionAPIViewModel.putUserDetail(it[0], it[1], it[2]) },
+                    noteList = noteList,
+                    userDetailList = listOfUserDetail,
+                    userDetailLoadingValue = userDetailLoadingValue,
+                    getAPIData = { getAPIData.value = it}
+                )
+            }
+
+            composable(
+                NavEnum.DownloadScreen.name,
+                enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                    )
+                }, popExitTransition = {
+                    return@composable slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                    )
+                }
+            ){
+                DownloadScreen(
+                    noteDAOViewModel = NoteDAOViewModel,
+                    navController = navController,
+                    noteList = downloadedNoteList,
+                    userDetailList = listOfUserDetail,
+                    userDetailLoadingValue = userDetailLoadingValue,
+                    getAPIData = { getAPIData.value = it }
+                )
+            }
         }
     }
 }

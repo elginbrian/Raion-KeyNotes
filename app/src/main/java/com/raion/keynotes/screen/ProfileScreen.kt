@@ -57,15 +57,15 @@ import com.raion.keynotes.navigation.NavEnum
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: RaionAPIViewModel,
     navController: NavController,
-    putUserDetail: (List<String>) -> Unit
+    hoursSinceLastLogin: Long,
+    noteList: List<NoteItem>,
+    userDetailList: List<String>,
+    putUserDetail: (List<String>) -> Unit,
+    userDetailLoadingValue: Boolean,
+    getAPIData: (Boolean) -> Unit
 ) {
-    var userDetailLoadingValue: Boolean = false
-    UserDetail(viewModel = viewModel){
-        userDetailLoadingValue = it
-    }
-
+    getAPIData(true)
     val context = LocalContext.current as Activity
     var displayForm = remember {
         mutableStateOf(false)
@@ -83,28 +83,7 @@ fun ProfileScreen(
         mutableStateOf(false)
     }
 
-    var userDetail = viewModel.getUserDetail.value.data
-
-    var userId: String = "NO INTERNET"
-    var userName: String = "NO INTERNET"
-    var password: String = "NO INTERNET"
-    var userNameSplit: List<String> = listOf("[NO", "INTERNET]")
-
-    if(userDetail != null){
-        userId   = userDetail.data.id
-        userName = userDetail.data.name
-        password = userDetail.data.password
-        userNameSplit = userName.split(" ")
-    }
-
-    var noteRawList = viewModel.getNote.value.data
-    var noteList: List<NoteItem>
-
-    if (noteRawList != null) {
-        noteList = noteRawList.data
-    } else {
-        noteList = emptyList()
-    }
+    var userNameSplit = userDetailList[0].split(" ")
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(30, 30, 30, 255)) {
         Scaffold(
@@ -167,15 +146,15 @@ fun ProfileScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
-                                Text(
-                                    text = "Your Profile",
-                                    fontSize = 28.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color.White
-                                )
-                                Spacer(modifier = Modifier.padding(5.dp))
-
                                 if (displayForm.value) {
+                                    Text(
+                                        text = "Your Profile",
+                                        fontSize = 28.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.padding(5.dp))
+
                                     Card(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -271,7 +250,8 @@ fun ProfileScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(140.dp),
-                                        elevation = CardDefaults.cardElevation(8.dp)
+                                        elevation = CardDefaults.cardElevation(8.dp),
+                                        colors = CardDefaults.cardColors(Color(51,47,51))
                                     ) {
                                         Column(
                                             modifier = Modifier
@@ -287,10 +267,10 @@ fun ProfileScreen(
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Text(text = "Username:", fontSize = 16.sp)
-                                                Text(text = userName, fontSize = 16.sp, maxLines = 1)
+                                                Text(text = "Username:", fontSize = 16.sp, color = Color.White)
+                                                Text(text = userDetailList[0], fontSize = 16.sp, maxLines = 1, color = Color.White)
                                             }
-                                            Divider(thickness = 2.dp)
+                                            Divider(thickness = 2.dp, color = Color(65,65,65))
                                             Row(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
@@ -298,10 +278,10 @@ fun ProfileScreen(
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Text(text = "NIM:", fontSize = 16.sp)
-                                                Text(text = userId, fontSize = 16.sp, maxLines = 1)
+                                                Text(text = "NIM:", fontSize = 16.sp, color = Color.White)
+                                                Text(text = userDetailList[1], fontSize = 16.sp, maxLines = 1, color = Color.White)
                                             }
-                                            Divider(thickness = 2.dp)
+                                            Divider(thickness = 2.dp, color = Color(65,65,65))
                                             Row(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
@@ -309,8 +289,8 @@ fun ProfileScreen(
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Text(text = "Password:     ", fontSize = 16.sp)
-                                                Text(text = password, fontSize = 16.sp, maxLines = 1)
+                                                Text(text = "Login Expiration:", fontSize = 16.sp, color = Color.White)
+                                                Text(text = "in $hoursSinceLastLogin hours", fontSize = 16.sp, maxLines = 1, color = Color.White)
                                             }
                                         }
                                     }
@@ -319,7 +299,8 @@ fun ProfileScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(100.dp),
-                                        elevation = CardDefaults.cardElevation(8.dp)
+                                        elevation = CardDefaults.cardElevation(8.dp),
+                                        colors = CardDefaults.cardColors(Color(51,47,51))
                                     ) {
                                         Column(
                                             modifier = Modifier
@@ -335,10 +316,10 @@ fun ProfileScreen(
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Text(text = "Total Notes:", fontSize = 16.sp)
-                                                Text(text = noteList.size.toString(), fontSize = 16.sp)
+                                                Text(text = "Total Notes:", fontSize = 16.sp, color = Color.White)
+                                                Text(text = noteList.size.toString(), fontSize = 16.sp, color = Color.White)
                                             }
-                                            Divider(thickness = 2.dp)
+                                            Divider(thickness = 2.dp, color = Color(65,65,65))
                                             Row(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
@@ -346,7 +327,7 @@ fun ProfileScreen(
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Text(text = "Last Activity:", fontSize = 16.sp)
+                                                Text(text = "Last Activity:", fontSize = 16.sp, color = Color.White)
                                                 Text(
                                                     text =
                                                         if(noteList.size > 0){
@@ -355,10 +336,15 @@ fun ProfileScreen(
                                                             "none"
                                                         }
                                                     ,
-                                                    fontSize = 13.sp
+                                                    fontSize = 13.sp,
+                                                    color = Color.White
                                                 )
                                             }
                                         }
+                                    }
+                                    Spacer(modifier = Modifier.padding(7.dp))
+                                    BarButton(color = Color(250, 110, 80), text = "Logout"){
+                                        navController.navigate(route = NavEnum.LoginScreen.name)
                                     }
                                 }
                             }

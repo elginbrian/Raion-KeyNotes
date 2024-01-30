@@ -12,5 +12,5 @@ data class TokenClass(
     var tokenId: String,
 
     @ColumnInfo
-    var tokenString: String
+    var timeStamp: String
 )

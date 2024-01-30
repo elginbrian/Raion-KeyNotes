@@ -91,10 +91,9 @@ fun UserDetail(
 @Composable
 fun NoteCard(
     noteItem: NoteItem,
-    lastIndex: Boolean,
     trigger: (String) -> Unit
 ){
-    var noteColor: Color = MaterialTheme.colorScheme.onPrimary
+    var noteColor: Color = Color.White
     if(noteItem.description.contains("#NoteColorRed")){
         noteColor = Color(250, 175, 175)
     } else if(noteItem.description.contains("#NoteColorGreen")){
@@ -152,9 +151,6 @@ fun NoteCard(
                 Text(text = noteItem.description, fontSize = 12.sp, maxLines = 8, textAlign = TextAlign.Justify, lineHeight = 13.sp)
             }
         }
-    }
-    if(lastIndex == true){
-        Spacer(modifier = Modifier.padding(80.dp))
     }
 }
 

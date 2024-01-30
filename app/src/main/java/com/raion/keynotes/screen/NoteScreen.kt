@@ -136,7 +136,7 @@ fun NoteScreen(
                                     .clickable {
                                         putNote(
                                             listOf(
-                                                thisNoteId,
+                                                noteId.toString(),
                                                 newNoteTitle.value,
                                                 newNoteDescription.value
                                             )
@@ -172,7 +172,7 @@ fun NoteScreen(
                                     .clickable {
                                         putNote(
                                             listOf(
-                                                thisNoteId,
+                                                noteId.toString(),
                                                 newNoteTitle.value,
                                                 newNoteDescription.value
                                             )

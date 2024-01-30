@@ -16,16 +16,20 @@ import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.network.RaionAPI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private val tokenDAO: TokenDAO){
     private val getNoteException       = DataExceptionHandling<GetNoteResponse, Boolean, Exception>()
     private val getUserDetailException = DataExceptionHandling<GetUserDetailResponse, Boolean, Exception>()
 
+    suspend fun getToken() = tokenDAO.getToken()
     suspend fun retrieveToken(): String {
         val tokenClass = tokenDAO.getToken().firstOrNull()
-        return "Bearer " + tokenClass?.tokenString
+        return "Bearer " + tokenClass?.tokenId
     }
+
+    val currentTime = LocalDateTime.now()
 
     suspend fun getNoteResponse(): DataExceptionHandling<GetNoteResponse, Boolean, Exception>{
         try {
@@ -37,8 +41,7 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
             }
         } catch (exception: Exception){
             getNoteException.e = exception
-            Log.d("Repo exception", "getNoteResponse: ${getNoteException.e!!.localizedMessage}")
-            Log.d("Repo exception", "getNoteResponse: ${retrieveToken()}")
+            Log.d("Request exception", "getNoteResponse: ${getNoteException.e!!.localizedMessage}")
         }
         return getNoteException
     }
@@ -52,23 +55,22 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
             }
         } catch (exception: Exception){
             getUserDetailException.e = exception
-            Log.d("Repo exception", "getUserDetailResponse: ${getUserDetailException.e!!.localizedMessage}")
-            Log.d("Repo exception", "getUserDetailResponse: ${retrieveToken()}")
+            Log.d("Request exception", "getUserDetailResponse: ${getUserDetailException.e!!.localizedMessage}")
         }
         return getUserDetailException
     }
 
     suspend fun postNoteRequest(title: String, description: String){
         val noteRequest = PostNoteRequest(title, description)
+        val response = api.postNote(request = noteRequest, token = retrieveToken())
         try{
-            val response = api.postNote(request = noteRequest, token = retrieveToken())
             if(!response.error){
-                Log.d("Repo sucsess", "Response: ${response.data}")
+                Log.d("Request success", "Response: ${response.data}")
             } else {
-                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+                Log.d("Request exception", "Response: ${response.status} | ${response.message}")
             }
         } catch (e: Exception){
-            Log.d("Repo exception", "${e.printStackTrace()}")
+            Log.d("Request exception", "${e.printStackTrace()}")
         }
     }
 
@@ -77,12 +79,12 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
         try {
             val response = api.postRegister(request = registerRequest, token = retrieveToken())
             if(!response.error){
-                Log.d("Repo sucsess", "Response: ${response.data}")
+                Log.d("Request success", "Response: ${response.data}")
             } else {
-                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+                Log.d("Request exception", "Error: ${response.status} | ${response.message}")
             }
         } catch (e: Exception){
-            Log.d("Repo exception", "${e.printStackTrace()}")
+            Log.d("Request exception", "${e.printStackTrace()}")
         }
     }
 
@@ -91,13 +93,13 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
         val response = api.postLogin(request = loginRequest, token = retrieveToken())
         try {
             if(!response.error){
-                Log.d("Repo sucsess", "Response: ${response.data.token}")
-                tokenDAO.insert(TokenClass(tokenId = response.data.token, tokenString = response.data.token))
+                Log.d("Request success", "Response: ${response.data.token}")
+                tokenDAO.insert(TokenClass(tokenId = response.data.token, timeStamp = currentTime.toString()))
             } else {
-                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+                Log.d("Request exception", "Error: ${response.status} | ${response.message}")
             }
         } catch (e: Exception){
-            Log.d("Repo exception", "${e.printStackTrace()}")
+            Log.d("Request exception", "${e.printStackTrace()}")
         }
     }
 
@@ -106,12 +108,12 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
         try {
             val response = api.putNote(noteId = noteId, request = putNoteRequest, token = retrieveToken())
             if(!response.error){
-                Log.d("Repo sucsess", "Response: ${response.data}")
+                Log.d("Request success", "Response: ${response.data}")
             } else {
-                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+                Log.d("Request exception", "Error: ${response.status} | ${response.message}")
             }
         } catch (e: Exception){
-            Log.d("Repo exception", "${e.printStackTrace()}")
+            Log.d("Request exception", "${e.printStackTrace()}")
         }
     }
 
@@ -120,25 +122,25 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
         try {
             val response = api.putUserDetail(request = putUserDetailRequest, token = retrieveToken())
             if(!response.error){
-                Log.d("Repo sucsess", "Response: ${response.data}")
+                Log.d("Request success", "Response: ${response.data}")
             } else {
-                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+                Log.d("Request exception", "Error: ${response.status} | ${response.message}")
             }
         } catch (e: Exception){
-            Log.d("Repo exception", "${e.printStackTrace()}")
+            Log.d("Request exception", "${e.printStackTrace()}")
         }
     }
 
     suspend fun deleteNoteRequest(noteId: String){
+        val response = api.deleteNote(noteId = noteId, token = retrieveToken())
         try {
-            val response = api.deleteNote(noteId = noteId, token = retrieveToken())
             if(!response.error){
-                Log.d("Repo sucsess", "Response: ${response.data}")
+                Log.d("Request success", "Response: ${response.data}")
             } else {
-                Log.d("Repo exception", "Error: ${response.status} | ${response.message}")
+                Log.d("Request exception", "Error: ${response.status} | ${response.message}")
             }
         } catch (e: Exception){
-            Log.d("Repo exception", "${e.printStackTrace()}")
+            Log.d("Request exception", "${e.printStackTrace()}")
         }
     }
 }

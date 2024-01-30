@@ -1,7 +1,6 @@
 package com.raion.keynotes.screen
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,25 +29,27 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.raion.keynotes.R
 import com.raion.keynotes.component.BarButton
 import com.raion.keynotes.component.RaionTextField
-import com.raion.keynotes.model.PostLoginResponse
+import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.navigation.NavEnum
-import kotlinx.coroutines.delay
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: RaionAPIViewModel,
     postRegister: (List<String>) -> Unit,
     postLogin: (List<String>) -> Unit
 ){
     val context = LocalContext.current as Activity
+
     var loginFlag = remember {
         mutableStateOf("1")
     }
@@ -224,6 +224,7 @@ fun LoginScreen(
                 if (preventFlag.value == false) {
                     if(loginFlag.value == "1"){
                         postLogin(listOf(nim.value, password.value))
+                        postLogin(listOf(nim.value, password.value))
 
                         nim.value = ""
                         password.value = ""
@@ -235,18 +236,12 @@ fun LoginScreen(
                         nim.value = ""
                         password.value = ""
                         description.value = ""
-                        navController.navigate(route = NavEnum.HomeScreen.name)
+
                         context.recreate()
                     }
                 }
             }
-            Spacer(modifier = Modifier.padding(5.dp))
-            BarButton(
-                text = "Homescreen"
-            ){
-                navController.navigate(route = NavEnum.HomeScreen.name)
-            }
-            Spacer(modifier = Modifier.padding(60.dp))
+            Spacer(modifier = Modifier.padding(80.dp))
         }
     }
 }

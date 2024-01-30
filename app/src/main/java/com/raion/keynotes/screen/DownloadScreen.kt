@@ -55,36 +55,14 @@ import com.raion.keynotes.navigation.NavEnum
 @Composable
 fun DownloadScreen(
     noteDAOViewModel: NoteDAOViewModel,
-    RaionAPIViewModel: RaionAPIViewModel,
     navController: NavController,
-    deleteNote: (String) -> Unit,
-    noteList: List<NoteClass>
+    noteList: List<NoteClass>,
+    userDetailList: List<String>,
+    userDetailLoadingValue: Boolean,
+    getAPIData: (Boolean) -> Unit
 ){
-    var userDetailLoadingValue: Boolean = false
-    UserDetail(viewModel = RaionAPIViewModel){
-        userDetailLoadingValue = it
-    }
-
-    var displayForm = remember {
-        mutableStateOf(false)
-    }
-    var preventFlag = remember {
-        mutableStateOf(false)
-    }
-    var newNoteTitle = remember {
-        mutableStateOf("")
-    }
-    var newNoteDescription = remember {
-        mutableStateOf("")
-    }
-
-    var userDetail = RaionAPIViewModel.getUserDetail.value.data
-    var userName: String = ""
-    var userNameSplit: List<String> = listOf("[NO", "INTERNET]")
-    if(userDetail != null){
-        userName = userDetail.data.name
-        userNameSplit = userName.split(" ")
-    }
+    getAPIData(true)
+    var userNameSplit = userDetailList[0].split(" ")
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(30,30,30, 255)) {
         Scaffold(
@@ -135,8 +113,7 @@ fun DownloadScreen(
                             Column(modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight(0.92f)
-                                .padding(15.dp)
-                                .padding(top = 22.dp),
+                                .padding(15.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Top
                             ) {
@@ -148,6 +125,9 @@ fun DownloadScreen(
 
                                             }
                                         }
+                                    }
+                                    item {
+                                        Spacer(modifier = Modifier.padding(80.dp))
                                     }
                                 }
 
