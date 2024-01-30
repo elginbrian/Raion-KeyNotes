@@ -1,6 +1,7 @@
 package com.raion.keynotes.network
 
 import com.raion.keynotes.model.DeleteNoteResponse
+import com.raion.keynotes.model.GetNoteDetailResponse
 import com.raion.keynotes.model.GetNoteResponse
 import com.raion.keynotes.model.GetUserDetailResponse
 import com.raion.keynotes.model.PostLoginRequest
@@ -35,6 +36,12 @@ interface RaionAPI {
         @Header("Authorization") token: String
     ) : GetUserDetailResponse
 
+    @GET("note/{noteId}")
+    suspend fun getNoteDetail(
+        @Path("noteId") noteId: String,
+        @Header("Authorization") token: String
+    ): GetNoteDetailResponse
+
 
     // POST
     @POST("note")
@@ -58,8 +65,8 @@ interface RaionAPI {
     //PUT
     @PUT("note/{noteId}")
     suspend fun putNote(
-        @Path("noteId") noteId: String,
         @Header("Authorization") token: String,
+        @Path("noteId") noteId: String,
         @Body request: PutNoteRequest
     ): PutNoteResponse
 

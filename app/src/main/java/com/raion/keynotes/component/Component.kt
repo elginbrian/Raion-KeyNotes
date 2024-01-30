@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -19,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -32,6 +34,7 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -40,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.raion.keynotes.R
 import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.NoteItem
 import com.raion.keynotes.screen.RaionAPIViewModel
@@ -91,6 +95,80 @@ fun UserDetail(
 @Composable
 fun NoteCard(
     noteItem: NoteItem,
+    isPinned: Boolean,
+    trigger: (String) -> Unit
+){
+    var noteColor: Color = Color.White
+    if(noteItem.description.contains("#NoteColorRed")){
+        noteColor = Color(250, 175, 175)
+    } else if(noteItem.description.contains("#NoteColorGreen")){
+        noteColor = Color(220, 250, 175)
+    } else if (noteItem.description.contains("#NoteColorBlue")){
+        noteColor = Color(175, 210, 250)
+    } else if (noteItem.description.contains("#NoteColorViolet")){
+        noteColor = Color(210, 175, 250)
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+            .padding(
+                start = 10.dp,
+                end = 10.dp,
+                top = 15.dp,
+                bottom = 5.dp
+            )
+            .clickable { trigger(noteItem.noteId) },
+        shape = RoundedCornerShape(15.dp),
+        elevation = CardDefaults.cardElevation(10.dp),
+        colors = CardDefaults.cardColors(noteColor),
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
+                colors = CardDefaults.cardColors(Color(30,30,30, 255))
+            ) {
+                Row(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 15.dp, end = 15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = noteItem.title, fontSize = 18.sp ,fontWeight = FontWeight(500), color = Color.White, maxLines = 1)
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if(isPinned == true){
+                            Box(modifier = Modifier
+                                .width(18.dp)
+                                .height(18.dp)){
+                                Icon(painter = painterResource(id = R.drawable.thumbtack), contentDescription = "pin", tint = Color.White)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Column(modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize(),
+            ) {
+                Text(text = noteItem.description, fontSize = 12.sp, maxLines = 8, textAlign = TextAlign.Justify, lineHeight = 13.sp)
+            }
+        }
+    }
+}
+
+@Composable
+fun DownloadedNoteCard(
+    noteItem: NoteClass,
+    isPinned: Boolean,
     trigger: (String) -> Unit
 ){
     var noteColor: Color = Color.White
@@ -139,7 +217,13 @@ fun NoteCard(
                     Text(text = noteItem.title, fontSize = 18.sp ,fontWeight = FontWeight(500), color = Color.White, maxLines = 1)
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        //Text(text = noteItem.updatedAt, fontSize = 12.sp, color = Color.White, maxLines = 1)
+                        if(isPinned == true){
+                            Box(modifier = Modifier
+                                .width(18.dp)
+                                .height(18.dp)){
+                                Icon(painter = painterResource(id = R.drawable.thumbtack), contentDescription = "pin", tint = Color.White)
+                            }
+                        }
                     }
                 }
             }
@@ -147,62 +231,6 @@ fun NoteCard(
             Column(modifier = Modifier
                 .padding(8.dp)
                 .fillMaxSize(),
-            ) {
-                Text(text = noteItem.description, fontSize = 12.sp, maxLines = 8, textAlign = TextAlign.Justify, lineHeight = 13.sp)
-            }
-        }
-    }
-}
-
-@Composable
-fun DownloadedNoteCard(
-    noteItem: NoteClass,
-    trigger: (String) -> Unit
-){
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(180.dp)
-            .padding(
-                start = 10.dp,
-                end = 10.dp,
-                top = 15.dp,
-                bottom = 5.dp
-            )
-            .clickable { trigger(noteItem.noteId) },
-        shape = RoundedCornerShape(15.dp),
-        elevation = CardDefaults.cardElevation(10.dp),
-        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.inversePrimary)
-    ){
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp),
-                shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
-                colors = CardDefaults.cardColors(Color(30,30,30, 255))
-            ) {
-                Row(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 15.dp, end = 15.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = noteItem.title, fontSize = 18.sp ,fontWeight = FontWeight(500), color = Color.White, maxLines = 1)
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = noteItem.updatedAt, fontSize = 12.sp, color = Color.White, maxLines = 1)
-                    }
-                }
-            }
-
-            Column(modifier = Modifier
-                .padding(8.dp)
-                .fillMaxSize(),
-                //verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = noteItem.description, fontSize = 12.sp, maxLines = 8, textAlign = TextAlign.Justify, lineHeight = 13.sp)
             }

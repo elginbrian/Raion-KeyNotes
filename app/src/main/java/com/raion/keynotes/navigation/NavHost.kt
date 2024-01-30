@@ -1,8 +1,8 @@
 package com.raion.keynotes.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -19,76 +19,48 @@ import androidx.navigation.navArgument
 import com.raion.keynotes.component.Notes
 import com.raion.keynotes.component.UserDetail
 import com.raion.keynotes.model.NoteClass
-import com.raion.keynotes.model.NoteItem
 import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.screen.DownloadScreen
 import com.raion.keynotes.screen.HomeScreen
 import com.raion.keynotes.screen.LoginScreen
 import com.raion.keynotes.screen.NoteDAOViewModel
 import com.raion.keynotes.screen.CreateNewNoteScreen
+import com.raion.keynotes.screen.DownloadedNoteScreen
 import com.raion.keynotes.screen.NoteScreen
 import com.raion.keynotes.screen.ProfileScreen
 import com.raion.keynotes.screen.RaionAPIViewModel
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
+import com.raion.keynotes.util.processHoursSinceLogin
+import com.raion.keynotes.util.processNoteList
+import com.raion.keynotes.util.processUserDetail
 
 @Composable
 fun NavHost(
     RaionAPIViewModel: RaionAPIViewModel,
     NoteDAOViewModel: NoteDAOViewModel
 ){
-    val navController  = rememberNavController()
-    val coroutineScope = rememberCoroutineScope()
+    val navController          = rememberNavController()
+    val coroutineScope         = rememberCoroutineScope()
 
-    var downloadedNoteList    = NoteDAOViewModel.notelist.collectAsState().value
-    var isToken: TokenClass?  = RaionAPIViewModel.token.collectAsState().value
-    var token: TokenClass     = isToken ?: TokenClass("","2006-04-22T12:00:00.000000")
+    var downloadedNoteList     = NoteDAOViewModel.notelist.collectAsState().value
+    var isToken: TokenClass?   = RaionAPIViewModel.token.collectAsState().value
 
-    var tokenTimestamp       = token.timeStamp
-    val formatter            = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-    val parseTokenTimeStamp  = LocalDateTime.parse(tokenTimestamp, formatter)
-    val currentTime          = LocalDateTime.now()
-    var durationD            = Duration.between(parseTokenTimeStamp, currentTime)
-    var hoursSinceLastLogin  = durationD.toHours()
+    var token: TokenClass      = isToken ?: TokenClass("","2006-04-22T12:00:00.000000")
+    var tokenTimestamp         = token.timeStamp
+    var hoursSinceLastLogin    = processHoursSinceLogin(tokenTimestamp)
 
-    var noteRawList = RaionAPIViewModel.getNote.value.data
-    var noteList: List<NoteItem>
+    var noteRawList            = RaionAPIViewModel.getNote.value.data
+    var noteList               = processNoteList(noteRawList)
 
-    noteList =
-        if (noteRawList != null) {
-        noteRawList.data
-        } else {
-            listOf()
-        }
-
-    var userDetail = RaionAPIViewModel.getUserDetail.value.data
-
-    var userId: String   = "NO INTERNET"
-    var userName: String = "NO INTERNET"
-    var password: String = "NO INTERNET"
-
-    if(userDetail != null){
-        userId   = userDetail.data.id
-        userName = userDetail.data.name
-        password = userDetail.data.password
-    }
-    var listOfUserDetail = listOf(userName, userId, password)
+    var userDetail             = RaionAPIViewModel.getUserDetail.value.data
+    var listOfUserDetail       = processUserDetail(userDetail)
 
     var notesLoadingValue      = false
     var userDetailLoadingValue = false
-    var getAPIData             = remember {
-        mutableStateOf(false)
-    }
 
-    if(getAPIData.value == true){
-        Notes(viewModel = RaionAPIViewModel){
-            notesLoadingValue = it
-        }
-        UserDetail(viewModel = RaionAPIViewModel){
-            userDetailLoadingValue = it
-        }
+    var getAPIData             = remember { mutableStateOf(false) }
+    if(getAPIData.value){
+        Notes(viewModel = RaionAPIViewModel){ notesLoadingValue = it }
+        UserDetail(viewModel = RaionAPIViewModel){ userDetailLoadingValue = it }
         getAPIData.value = false
     }
 
@@ -104,15 +76,11 @@ fun NavHost(
         ) {
             composable(
                 NavEnum.LoginScreen.name, enterTransition = {
-                    return@composable fadeIn(tween(1000))
+                    return@composable fadeIn(tween(700))
                 }, exitTransition = {
-                    return@composable slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                    )
+                    return@composable fadeOut(tween(700))
                 }, popEnterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                    )
+                    return@composable fadeIn(tween(700))
                 }
             ){
                 LoginScreen(
@@ -125,13 +93,9 @@ fun NavHost(
 
             composable(
                 NavEnum.HomeScreen.name, enterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                    )
+                    return@composable fadeIn(tween(700))
                 }, popExitTransition = {
-                    return@composable slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                    )
+                    return@composable fadeOut(tween(700))
                 }
             ){
                 HomeScreen(
@@ -148,19 +112,15 @@ fun NavHost(
                 NavEnum.NoteScreen.name+"/{noteId}",
                 arguments = listOf(navArgument(name = "noteId"){type = NavType.StringType}),
                 enterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                    )
+                    return@composable fadeIn(tween(700))
                 }, popExitTransition = {
-                    return@composable slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                    )
+                    return@composable fadeOut(tween(700))
                 }
             ){
                     backStackEntry ->
                 NoteScreen(
                     navController = navController, backStackEntry.arguments?.getString("noteId"),
-                    viewModel = RaionAPIViewModel,
+                    noteList = noteList,
                     deleteNote = { RaionAPIViewModel.deleteNote(it)},
                     downloadNote = { NoteDAOViewModel.addNote(NoteClass(
                         noteId = it[0],
@@ -169,20 +129,35 @@ fun NavHost(
                         createdAt = it[3],
                         updatedAt = it[4]))
                     },
-                    putNote = { RaionAPIViewModel.putNote(it[0], it[1], it[2]) }
+                    putNote = { RaionAPIViewModel.putNote(noteId = it[0], title =  it[1], description = it[2]) },
+                    postNote = { RaionAPIViewModel.postNote(title = it[0], description = it[1])}
+                )
+            }
+
+            composable(
+                NavEnum.DownloadedNoteScreen.name+"/{noteId}",
+                arguments = listOf(navArgument(name = "noteId"){type = NavType.StringType}),
+                enterTransition = {
+                    return@composable fadeIn(tween(700))
+                }, popExitTransition = {
+                    return@composable fadeOut(tween(700))
+                }
+            ){
+                    backStackEntry ->
+                DownloadedNoteScreen(
+                    navController = navController, backStackEntry.arguments?.getString("noteId"),
+                    downloadedNoteList = downloadedNoteList,
+                    deleteNote = { NoteDAOViewModel.removeNote(it) },
+                    putNote = { NoteDAOViewModel.updateNote(noteId = it[0], title = it[1], description = it[2]) }
                 )
             }
 
             composable(
                 NavEnum.CreateNewNoteScreen.name,
                 enterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                    )
+                    return@composable fadeIn(tween(700))
                 }, popExitTransition = {
-                    return@composable slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                    )
+                    return@composable fadeOut(tween(700))
                 }
             ){
                 CreateNewNoteScreen(
@@ -195,13 +170,9 @@ fun NavHost(
             composable(
                 NavEnum.ProfileScreen.name,
                 enterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                    )
+                    return@composable fadeIn(tween(700))
                 }, popExitTransition = {
-                    return@composable slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                    )
+                    return@composable fadeOut(tween(700))
                 }
             ){
                 ProfileScreen(
@@ -211,20 +182,17 @@ fun NavHost(
                     noteList = noteList,
                     userDetailList = listOfUserDetail,
                     userDetailLoadingValue = userDetailLoadingValue,
-                    getAPIData = { getAPIData.value = it}
+                    getAPIData = { getAPIData.value = it},
+                    removeToken = { RaionAPIViewModel.addToken(tokenId = it, timestamp = "2006-04-22T12:00:00.000000")}
                 )
             }
 
             composable(
                 NavEnum.DownloadScreen.name,
                 enterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                    )
+                    return@composable fadeIn(tween(700))
                 }, popExitTransition = {
-                    return@composable slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                    )
+                    return@composable fadeOut(tween(700))
                 }
             ){
                 DownloadScreen(

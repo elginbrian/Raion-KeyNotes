@@ -127,26 +127,46 @@ fun HomeScreen(
                                 if(noteList.isNotEmpty()){
                                     LazyColumn(modifier = Modifier.fillMaxSize()){
                                         items(noteList){noteItem ->
-                                            NoteCard(noteItem = noteItem){noteId ->
-                                                if(noteId.isNotEmpty()){
-                                                    navController.navigate(route = NavEnum.NoteScreen.name+"/$noteId")
+                                            if(noteItem.description.contains("#PinnedNote")){
+                                                NoteCard(noteItem = noteItem, isPinned = true){ noteId ->
+                                                    if(noteId.isNotEmpty()){
+                                                        navController.navigate(route = NavEnum.NoteScreen.name+"/$noteId")
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        items(noteList){noteItem ->
+                                            if(!noteItem.description.contains("#PinnedNote")){
+                                                NoteCard(noteItem = noteItem, isPinned = false){noteId ->
+                                                    if(noteId.isNotEmpty()){
+                                                        navController.navigate(route = NavEnum.NoteScreen.name+"/$noteId")
+                                                    }
                                                 }
                                             }
                                         }
                                         item {
+                                            if(notesLoadingValue){
+                                                Spacer(modifier = Modifier.padding(1.dp))
+                                                CircularProgressIndicator(color = Color(255,199,0,255))
+                                            }
                                             Spacer(modifier = Modifier.padding(80.dp))
                                         }
                                     }
 
                                 } else {
                                     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
-                                        if(notesLoadingValue == true){
-                                            CircularProgressIndicator(color = Color(255,199,0,255))
-                                        } else {
-                                            Image(painter = painterResource(id = R.drawable.emptybox), contentDescription = "empty box", modifier = Modifier.fillMaxSize(0.4f))
-                                            Text(text = "You're currently don't have any notes", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
-                                            Spacer(modifier = Modifier.padding(80.dp))
+                                        Box(modifier = Modifier
+                                            .width(150.dp)
+                                            .height(150.dp)){
+                                            Image(painter = painterResource(id = R.drawable.emptybox), contentDescription = "empty box", modifier = Modifier.fillMaxSize(0.9f))
                                         }
+                                        Text(text = "You're currently don't have any notes", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                                        Spacer(modifier = Modifier.padding(2.dp))
+                                        if(notesLoadingValue){
+                                            CircularProgressIndicator(color = Color(255,199,0,255))
+                                        }
+                                        Spacer(modifier = Modifier.padding(80.dp))
                                     }
                                 }
                             }

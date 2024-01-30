@@ -4,6 +4,7 @@ import android.util.Log
 import com.raion.keynotes.data.DataExceptionHandling
 import com.raion.keynotes.data.NoteDAO
 import com.raion.keynotes.data.TokenDAO
+import com.raion.keynotes.model.GetNoteDetailResponse
 import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.PostNoteRequest
 import com.raion.keynotes.model.GetNoteResponse
@@ -16,6 +17,7 @@ import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.network.RaionAPI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import java.sql.Timestamp
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -23,7 +25,8 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
     private val getNoteException       = DataExceptionHandling<GetNoteResponse, Boolean, Exception>()
     private val getUserDetailException = DataExceptionHandling<GetUserDetailResponse, Boolean, Exception>()
 
-    suspend fun getToken() = tokenDAO.getToken()
+    fun getToken() = tokenDAO.getToken()
+    suspend fun addToken(tokenId: String, timestamp: String) = tokenDAO.insert(TokenClass(tokenId = tokenId, timeStamp = timestamp))
     suspend fun retrieveToken(): String {
         val tokenClass = tokenDAO.getToken().firstOrNull()
         return "Bearer " + tokenClass?.tokenId
@@ -106,6 +109,7 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
     suspend fun putNoteRequest(noteId: String, title: String, description: String){
         val putNoteRequest = PutNoteRequest(title, description)
         try {
+            Log.d("putNote", "Updating note with ID: $noteId, Title: $title, Description: $description")
             val response = api.putNote(noteId = noteId, request = putNoteRequest, token = retrieveToken())
             if(!response.error){
                 Log.d("Request success", "Response: ${response.data}")
@@ -150,8 +154,9 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
 class NoteDAORepository @Inject constructor(private val NoteDAO: NoteDAO){
     suspend fun addNote(NoteClass: NoteClass) = NoteDAO.insert(NoteClass)
 
-    suspend fun updateNote(noteId: String, description: String){
-        var existingNote = NoteDAO.getNoteId(noteId)
+    suspend fun updateNote(noteId: String, title: String, description: String){
+        var existingNote         = NoteDAO.getNoteId(noteId)
+        existingNote.title       = title
         existingNote.description = description
 
         NoteDAO.update(existingNote)

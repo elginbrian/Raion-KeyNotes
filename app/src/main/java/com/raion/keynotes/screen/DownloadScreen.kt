@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -118,16 +119,39 @@ fun DownloadScreen(
                                 verticalArrangement = Arrangement.Top
                             ) {
 
-                                LazyColumn(modifier = Modifier.fillMaxSize()){
-                                    items(noteList){noteItem ->
-                                        DownloadedNoteCard(noteItem = noteItem){noteId ->
-                                            if(noteId.isNotEmpty()){
-
+                                if(noteList.isNotEmpty()){
+                                    LazyColumn(modifier = Modifier.fillMaxSize()){
+                                        items(noteList){noteItem ->
+                                            if(noteItem.description.contains("#PinnedNote")){
+                                                DownloadedNoteCard(noteItem = noteItem, isPinned = true){noteId ->
+                                                    if(noteId.isNotEmpty()){
+                                                        navController.navigate(route = NavEnum.DownloadedNoteScreen.name+"/$noteId")
+                                                    }
+                                                }
                                             }
                                         }
+                                        items(noteList){noteItem ->
+                                            if(!noteItem.description.contains("#PinnedNote")){
+                                                DownloadedNoteCard(noteItem = noteItem, isPinned = false){noteId ->
+                                                    if(noteId.isNotEmpty()){
+                                                        navController.navigate(route = NavEnum.DownloadedNoteScreen.name+"/$noteId")
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        item {
+                                            Spacer(modifier = Modifier.padding(80.dp))
+                                        }
                                     }
-                                    item {
-                                        Spacer(modifier = Modifier.padding(80.dp))
+
+                                } else {
+                                    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
+                                        Box(modifier = Modifier
+                                            .width(150.dp)
+                                            .height(150.dp)){
+                                            Image(painter = painterResource(id = R.drawable.emptybox), contentDescription = "empty box", modifier = Modifier.fillMaxSize(0.9f))
+                                        }
+                                        Text(text = "You're currently don't have any notes", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
                                     }
                                 }
 
@@ -200,26 +224,6 @@ fun DownloadScreen(
                                 }
                             }
                         },
-                        //floatingActionButton = {
-                        //    Card(
-                        //        modifier = Modifier
-                        //            .width(65.dp)
-                        //            .height(65.dp)
-                        //            .clickable { displayForm.value = !displayForm.value },
-                        //        shape    = CircleShape,
-                        //        colors   = CardDefaults.cardColors(Color(51,47,51)),
-                        //        elevation = CardDefaults.cardElevation(10.dp),
-                        //        border = BorderStroke(3.dp, color = Color(255,199,0,255))
-                        //    ) {
-                        //        Box(modifier = Modifier
-                        //            .fillMaxSize()
-                        //            .padding(15.dp)
-                        //            .padding(top = 2.dp), contentAlignment = Alignment.Center){
-                        //            Icon(painter = painterResource(id = R.drawable.add), contentDescription = "new pocket", tint = Color(255,199,0,255), modifier = Modifier.padding(2.dp
-                        //            ))
-                        //        }
-                        //    }
-                        //}
                     )
                 }
             },

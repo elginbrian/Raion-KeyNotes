@@ -34,6 +34,23 @@ data class UserDetailItem(
 )
 
 
+// GET NOTE DETAIL
+data class GetNoteDetailResponse(
+    @SerializedName("error") val error: Boolean,
+    @SerializedName("status") val status: String,
+    @SerializedName("message") val message: String,
+    @SerializedName("data") val data: NoteDetailItem
+)
+
+data class NoteDetailItem(
+    @SerializedName("noteId") val noteId: String,
+    @SerializedName("title") val title: String,
+    @SerializedName("description") val description: String,
+    @SerializedName("createdAt") val createdAt: String,
+    @SerializedName("updatedAt") val updatedAt: String
+)
+
+
 // POST NOTE
 data class PostNoteResponse(
     @SerializedName("error")   val error: Boolean,

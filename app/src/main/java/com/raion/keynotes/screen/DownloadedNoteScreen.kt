@@ -25,7 +25,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,22 +43,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.raion.keynotes.R
 import com.raion.keynotes.component.TransparentTextField
-import com.raion.keynotes.model.GetNoteDetailResponse
+import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.NoteItem
 import com.raion.keynotes.navigation.NavEnum
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteScreen(
+fun DownloadedNoteScreen(
     navController: NavController,
     noteId: String?,
-    noteList: List<NoteItem>,
+    downloadedNoteList: List<NoteClass>,
     deleteNote: (String) -> Unit,
-    downloadNote: (List<String>) -> Unit,
-    putNote: (List<String>) -> Unit,
-    postNote: (List<String>) -> Unit
+    putNote: (List<String>) -> Unit
 ) {
     val context = LocalContext.current as Activity
 
@@ -69,13 +65,13 @@ fun NoteScreen(
     var noteCreatedAt: String = ""
     var noteUpdatedAt: String = ""
 
-    for(i in noteList.indices){
-        if(noteList[i].noteId.equals(noteId)){
-            thisNoteId      = noteList[i].noteId
-            noteTitle       = noteList[i].title
-            noteDescription = noteList[i].description
-            noteCreatedAt   = noteList[i].createdAt
-            noteUpdatedAt   = noteList[i].updatedAt
+    for(i in downloadedNoteList.indices){
+        if(downloadedNoteList[i].noteId.equals(noteId)){
+            thisNoteId      = downloadedNoteList[i].noteId
+            noteTitle       = downloadedNoteList[i].title
+            noteDescription = downloadedNoteList[i].description
+            noteCreatedAt   = downloadedNoteList[i].createdAt
+            noteUpdatedAt   = downloadedNoteList[i].updatedAt
         }
     }
 
@@ -129,16 +125,14 @@ fun NoteScreen(
                                 tint = Color.White,
                                 modifier = Modifier
                                     .clickable {
-                                        //putNote(
-                                        //    listOf(
-                                        //        thisNoteId,
-                                        //        newNoteTitle.value,
-                                        //        newNoteDescription.value
-                                        //    )
-                                        //)
-                                        postNote(listOf(newNoteTitle.value, newNoteDescription.value))
-                                        deleteNote(thisNoteId)
-                                        navController.navigate(route = NavEnum.HomeScreen.name)
+                                        putNote(
+                                            listOf(
+                                                noteId.toString(),
+                                                newNoteTitle.value,
+                                                newNoteDescription.value
+                                            )
+                                        )
+                                        navController.navigate(route = NavEnum.DownloadScreen.name)
                                         context.recreate()
                                     },
                                 contentDescription = ""
@@ -162,17 +156,17 @@ fun NoteScreen(
                             .width(20.dp)
                             .height(20.dp)){
                             Icon(
-                                painter = painterResource(id = R.drawable.thumbtack),
+                                painter = painterResource(id = R.drawable.disk),
                                 tint = Color.White,
                                 modifier = Modifier
                                     .clickable {
-                                        newNoteDescription.value =
-                                            newNoteDescription.value.replace(
-                                                "#PinnedNote",
-                                                ""
+                                        putNote(
+                                            listOf(
+                                                noteId.toString(),
+                                                newNoteTitle.value,
+                                                newNoteDescription.value
                                             )
-                                        newNoteDescription.value =
-                                            newNoteDescription.value + "\n#PinnedNote"
+                                        )
                                     },
                                 contentDescription = ""
                             )
@@ -293,36 +287,7 @@ fun NoteScreen(
                                                 tint = Color.White
                                             )
                                         }
-                                        Card(
-                                            modifier = Modifier
-                                                .width(85.dp)
-                                                .height(75.dp)
-                                                .clickable {
-                                                    if (navBarFlag.value == "2") {
-                                                        navBarFlag.value = "0"
-                                                    } else {
-                                                        navBarFlag.value = "2"
-                                                    }
-                                                },
-                                            shape = CircleShape,
-                                            colors = CardDefaults.cardColors(Color(255,199,0,255)),
-                                            elevation = CardDefaults.cardElevation(5.dp),
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(
-                                                        15.dp
-                                                    ),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                    Icon(
-                                                        painter = painterResource(id = R.drawable.download2),
-                                                        contentDescription = "home",
-                                                        tint = Color(30,30,30, 255)
-                                                    )
-                                            }
-                                        }
+
                                         Box(modifier = Modifier
                                             .width(85.dp)
                                             .height(75.dp)
@@ -383,22 +348,22 @@ fun NoteScreen(
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorRed",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorGreen",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorBlue",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorViolet",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value + "\n#NoteColorRed"
@@ -430,22 +395,22 @@ fun NoteScreen(
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorRed",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorGreen",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorBlue",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorViolet",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value + "\n#NoteColorGreen"
@@ -477,22 +442,22 @@ fun NoteScreen(
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorRed",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorGreen",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorBlue",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value.replace(
                                                                     "#NoteColorViolet",
-                                                                    "\b\b"
+                                                                    ""
                                                                 )
                                                             newNoteDescription.value =
                                                                 newNoteDescription.value + "\n#NoteColorBlue"
@@ -564,43 +529,7 @@ fun NoteScreen(
                                     }
                                 }
 
-                                "2" -> {
-                                    Card(
-                                        modifier = Modifier
-                                            .fillMaxWidth(0.92f)
-                                            .height(55.dp)
-                                            .clickable {
-                                                downloadNote(
-                                                    listOf(
-                                                        thisNoteId,
-                                                        noteTitle,
-                                                        noteDescription,
-                                                        noteCreatedAt,
-                                                        noteUpdatedAt
-                                                    )
-                                                )
-                                                context.recreate()
-                                            },
-                                        shape = RoundedCornerShape(20.dp),
-                                        elevation = CardDefaults.cardElevation(8.dp),
-                                        colors = CardDefaults.cardColors(Color(80, 120, 250))
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(start = 16.dp, end = 16.dp),
-                                            horizontalArrangement = Arrangement.Center,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                text = "Download this note",
-                                                fontSize = 15.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.White
-                                            )
-                                        }
-                                    }
-                                }
+
 
                                 "3" -> {
                                     Card(

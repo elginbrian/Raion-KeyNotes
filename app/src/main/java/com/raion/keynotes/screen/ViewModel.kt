@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.raion.keynotes.data.DataExceptionHandling
 import com.raion.keynotes.data.NoteDAO
+import com.raion.keynotes.model.GetNoteDetailResponse
 import com.raion.keynotes.model.NoteClass
 import com.raion.keynotes.model.GetNoteResponse
 import com.raion.keynotes.model.GetUserDetailResponse
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import java.sql.Timestamp
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,7 +45,7 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
                     if(getNote.value.data.toString().isNotEmpty()){
                         getNote.value.loading = false
                     }
-                    delay(60000)
+                    delay(3000)
                 }
             }
         }
@@ -65,7 +67,7 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
                 if(getUserDetail.value.data.toString().isNotEmpty()){
                     getUserDetail.value.loading = false
                 }
-                delay(60000)
+                delay(15000)
             }
         }
     }
@@ -83,7 +85,7 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
         }
     }
 
-
+    fun addToken(tokenId: String, timestamp: String)                                   = viewModelScope.launch { repository.addToken(tokenId, timestamp) }
     fun postNote(title: String, description: String)                                   = viewModelScope.launch { repository.postNoteRequest(title, description) }
     fun postRegister(nim: String, name: String, password: String, description: String) = viewModelScope.launch { repository.registerRequest(nim, name, password, description) }
     fun postLogin(nim: String, password: String)                                       = viewModelScope.launch { repository.loginRequest(nim, password) }
@@ -111,6 +113,6 @@ class NoteDAOViewModel @Inject constructor(val NoteDAORepository: NoteDAOReposit
 
     fun addNote(NoteClass: NoteClass) = viewModelScope.launch { NoteDAORepository.addNote(NoteClass) }
     fun removeNote(noteId: String) = viewModelScope.launch { NoteDAORepository.deleteNote(noteId) }
-    fun updateNote(noteId: String, description: String) = viewModelScope.launch { NoteDAORepository.updateNote(noteId, description) }
+    fun updateNote(noteId: String, title: String, description: String) = viewModelScope.launch { NoteDAORepository.updateNote(noteId, title ,description) }
     fun deleteAllNote(NoteClass: NoteClass) = viewModelScope.launch { NoteDAORepository.deleteAllNote() }
 }

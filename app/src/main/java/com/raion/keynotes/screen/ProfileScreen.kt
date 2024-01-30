@@ -51,6 +51,7 @@ import com.raion.keynotes.component.BarButton
 import com.raion.keynotes.component.RaionTextField
 import com.raion.keynotes.component.UserDetail
 import com.raion.keynotes.model.NoteItem
+import com.raion.keynotes.model.TokenClass
 import com.raion.keynotes.navigation.NavEnum
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -63,7 +64,8 @@ fun ProfileScreen(
     userDetailList: List<String>,
     putUserDetail: (List<String>) -> Unit,
     userDetailLoadingValue: Boolean,
-    getAPIData: (Boolean) -> Unit
+    getAPIData: (Boolean) -> Unit,
+    removeToken: (String) -> Unit
 ) {
     getAPIData(true)
     val context = LocalContext.current as Activity
@@ -290,7 +292,7 @@ fun ProfileScreen(
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Text(text = "Login Expiration:", fontSize = 16.sp, color = Color.White)
-                                                Text(text = "in $hoursSinceLastLogin hours", fontSize = 16.sp, maxLines = 1, color = Color.White)
+                                                Text(text = "in ${23 - hoursSinceLastLogin} hours", fontSize = 16.sp, maxLines = 1, color = Color.White)
                                             }
                                         }
                                     }
@@ -344,6 +346,7 @@ fun ProfileScreen(
                                     }
                                     Spacer(modifier = Modifier.padding(7.dp))
                                     BarButton(color = Color(250, 110, 80), text = "Logout"){
+                                        removeToken("")
                                         navController.navigate(route = NavEnum.LoginScreen.name)
                                     }
                                 }
