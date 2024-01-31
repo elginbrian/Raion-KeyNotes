@@ -2,6 +2,7 @@ package com.raion.keynotes.screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -85,7 +86,12 @@ fun ProfileScreen(
         mutableStateOf(false)
     }
 
-    var userNameSplit = userDetailList[0].split(" ")
+    var userNameSplit: List<String> = listOf("", "")
+    if(userDetailList[0].contains(" ")){
+        userNameSplit = userDetailList[0].split(" ")
+    } else {
+        userNameSplit = listOf(userDetailList[0],"")
+    }
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(30, 30, 30, 255)) {
         Scaffold(
@@ -162,7 +168,7 @@ fun ProfileScreen(
                                             .fillMaxWidth()
                                             .height(240.dp),
                                         shape = RoundedCornerShape(20.dp),
-                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
+                                        colors = CardDefaults.cardColors(Color(51, 47, 51)),
                                         elevation = CardDefaults.cardElevation(5.dp),
                                     ) {
                                         Column(
@@ -231,6 +237,7 @@ fun ProfileScreen(
                                             newDescription.value = ""
                                             displayForm.value = !displayForm.value
                                             navController.navigate(route = NavEnum.ProfileScreen.name)
+                                            Toast.makeText(context, "Update success, reloading the data...", Toast.LENGTH_LONG).show()
                                         }
                                     }
 
@@ -348,6 +355,7 @@ fun ProfileScreen(
                                     BarButton(color = Color(250, 110, 80), text = "Logout"){
                                         removeToken("")
                                         navController.navigate(route = NavEnum.LoginScreen.name)
+                                        Toast.makeText(context, "Logout Success", Toast.LENGTH_LONG).show()
                                     }
                                 }
                             }

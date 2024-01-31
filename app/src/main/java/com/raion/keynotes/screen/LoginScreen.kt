@@ -1,6 +1,7 @@
 package com.raion.keynotes.screen
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -230,6 +231,7 @@ fun LoginScreen(
                         password.value = ""
                         navController.navigate(route = NavEnum.HomeScreen.name)
                         context.recreate()
+                        Toast.makeText(context, "Login Success, reloading the data...", Toast.LENGTH_LONG).show()
                     } else {
                         postRegister(listOf(name.value, nim.value, password.value, description.value))
                         name.value = ""
@@ -238,6 +240,7 @@ fun LoginScreen(
                         description.value = ""
 
                         context.recreate()
+                        Toast.makeText(context, "Registration Success", Toast.LENGTH_LONG).show()
                     }
                 }
             }

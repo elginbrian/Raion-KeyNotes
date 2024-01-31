@@ -1,6 +1,7 @@
 package com.raion.keynotes.component
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -159,7 +161,7 @@ fun NoteCard(
                 .padding(8.dp)
                 .fillMaxSize(),
             ) {
-                Text(text = noteItem.description, fontSize = 12.sp, maxLines = 8, textAlign = TextAlign.Justify, lineHeight = 13.sp)
+                Text(text = noteItem.description, fontSize = 12.sp, maxLines = 7, textAlign = TextAlign.Justify, lineHeight = 13.sp)
             }
         }
     }
@@ -232,7 +234,7 @@ fun DownloadedNoteCard(
                 .padding(8.dp)
                 .fillMaxSize(),
             ) {
-                Text(text = noteItem.description, fontSize = 12.sp, maxLines = 8, textAlign = TextAlign.Justify, lineHeight = 13.sp)
+                Text(text = noteItem.description, fontSize = 12.sp, maxLines = 7, textAlign = TextAlign.Justify, lineHeight = 13.sp)
             }
         }
     }
@@ -320,6 +322,235 @@ fun TransparentTextField(
         )
         if(isHintVisible){
             Text(text = hint, style = textStyle, color = Color.DarkGray)
+        }
+    }
+}
+
+@Composable
+fun NoteColorBar(
+    colorFlag: String,
+    newNoteDescription: String,
+    returnNoteDescription: (String) -> Unit,
+    returnColorFlag: (String) -> Unit
+){
+    var newNoteDescription = newNoteDescription
+    var colorFlag = colorFlag
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .height(55.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
+        colors = CardDefaults.cardColors(Color(51, 47, 51))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Note Color: ",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Card(
+                    modifier = Modifier
+                        .width(35.dp)
+                        .height(35.dp)
+                        .clickable {
+                            colorFlag = "1"
+                            returnColorFlag(colorFlag)
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorRed",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorGreen",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorBlue",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorViolet",
+                                    ""
+                                )
+                            newNoteDescription = newNoteDescription + "\n#NoteColorRed"
+                            returnNoteDescription(newNoteDescription)
+                        },
+                    shape = CircleShape,
+                    colors = CardDefaults.cardColors(
+                        Color(
+                            250,
+                            110,
+                            80
+                        )
+                    ),
+                    border =
+                    if (colorFlag == "1") {
+                        BorderStroke(4.dp, Color.White)
+                    } else {
+                        null
+                    }
+                ) {}
+
+                Spacer(modifier = Modifier.padding(5.dp))
+
+                Card(
+                    modifier = Modifier
+                        .width(35.dp)
+                        .height(35.dp)
+                        .clickable {
+                            colorFlag = "2"
+                            returnColorFlag(colorFlag)
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorRed",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorGreen",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorBlue",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorViolet",
+                                    ""
+                                )
+                            newNoteDescription = newNoteDescription + "\n#NoteColorGreen"
+                            returnNoteDescription(newNoteDescription)
+                        },
+                    shape = CircleShape,
+                    colors = CardDefaults.cardColors(
+                        Color(
+                            185,
+                            250,
+                            80
+                        )
+                    ),
+                    border =
+                    if (colorFlag == "2") {
+                        BorderStroke(4.dp, Color.White)
+                    } else {
+                        null
+                    }
+                ) {}
+
+                Spacer(modifier = Modifier.padding(5.dp))
+
+                Card(
+                    modifier = Modifier
+                        .width(35.dp)
+                        .height(35.dp)
+                        .clickable {
+                            colorFlag = "3"
+                            returnColorFlag(colorFlag)
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorRed",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorGreen",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorBlue",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorViolet",
+                                    ""
+                                )
+                            newNoteDescription = newNoteDescription + "\n#NoteColorBlue"
+                            returnNoteDescription(newNoteDescription)
+                        },
+                    shape = CircleShape,
+                    colors = CardDefaults.cardColors(
+                        Color(
+                            80,
+                            120,
+                            250
+                        )
+                    ),
+                    border =
+                    if (colorFlag == "3") {
+                        BorderStroke(4.dp, Color.White)
+                    } else {
+                        null
+                    }
+                ) {}
+
+                Spacer(modifier = Modifier.padding(5.dp))
+
+                Card(
+                    modifier = Modifier
+                        .width(35.dp)
+                        .height(35.dp)
+                        .clickable {
+                            colorFlag = "4"
+                            returnColorFlag(colorFlag)
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorRed",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorGreen",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorBlue",
+                                    ""
+                                )
+                            newNoteDescription =
+                                newNoteDescription.replace(
+                                    "#NoteColorViolet",
+                                    ""
+                                )
+                            newNoteDescription = newNoteDescription + "\n#NoteColorViolet"
+                            returnNoteDescription(newNoteDescription)
+                        },
+                    shape = CircleShape,
+                    colors = CardDefaults.cardColors(
+                        Color(
+                            170,
+                            80,
+                            250
+                        )
+                    ),
+                    border =
+                    if (colorFlag == "4") {
+                        BorderStroke(4.dp, Color.White)
+                    } else {
+                        null
+                    }
+                ) {}
+            }
         }
     }
 }

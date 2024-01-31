@@ -86,6 +86,7 @@ class RaionAPIViewModel @Inject constructor(private val repository: RaionAPIRepo
     }
 
     fun addToken(tokenId: String, timestamp: String)                                   = viewModelScope.launch { repository.addToken(tokenId, timestamp) }
+    fun deleteAllToken()                                                               = viewModelScope.launch { repository.deleteAllToken() }
     fun postNote(title: String, description: String)                                   = viewModelScope.launch { repository.postNoteRequest(title, description) }
     fun postRegister(nim: String, name: String, password: String, description: String) = viewModelScope.launch { repository.registerRequest(nim, name, password, description) }
     fun postLogin(nim: String, password: String)                                       = viewModelScope.launch { repository.loginRequest(nim, password) }

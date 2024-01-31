@@ -183,7 +183,7 @@ fun NavHost(
                     userDetailList = listOfUserDetail,
                     userDetailLoadingValue = userDetailLoadingValue,
                     getAPIData = { getAPIData.value = it},
-                    removeToken = { RaionAPIViewModel.addToken(tokenId = it, timestamp = "2006-04-22T12:00:00.000000")}
+                    removeToken = { RaionAPIViewModel.deleteAllToken() }
                 )
             }
 
@@ -196,7 +196,6 @@ fun NavHost(
                 }
             ){
                 DownloadScreen(
-                    noteDAOViewModel = NoteDAOViewModel,
                     navController = navController,
                     noteList = downloadedNoteList,
                     userDetailList = listOfUserDetail,

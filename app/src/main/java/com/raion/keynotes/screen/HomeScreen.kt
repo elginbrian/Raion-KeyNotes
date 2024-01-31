@@ -67,7 +67,12 @@ fun HomeScreen(
     getAPIData: (Boolean) -> Unit
 ){
     getAPIData(true)
-    var userNameSplit = userDetailList[0].split(" ")
+    var userNameSplit: List<String> = listOf("", "")
+    if(userDetailList[0].contains(" ")){
+        userNameSplit = userDetailList[0].split(" ")
+    } else {
+        userNameSplit = listOf(userDetailList[0],"")
+    }
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(30,30,30, 255)) {
         Scaffold(
@@ -147,8 +152,10 @@ fun HomeScreen(
                                         }
                                         item {
                                             if(notesLoadingValue){
-                                                Spacer(modifier = Modifier.padding(1.dp))
-                                                CircularProgressIndicator(color = Color(255,199,0,255))
+                                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                                                    Spacer(modifier = Modifier.padding(4.dp))
+                                                    CircularProgressIndicator(color = Color(255,199,0,255))
+                                                }
                                             }
                                             Spacer(modifier = Modifier.padding(80.dp))
                                         }
@@ -166,7 +173,7 @@ fun HomeScreen(
                                         if(notesLoadingValue){
                                             CircularProgressIndicator(color = Color(255,199,0,255))
                                         }
-                                        Spacer(modifier = Modifier.padding(80.dp))
+                                        Spacer(modifier = Modifier.padding(60.dp))
                                     }
                                 }
                             }

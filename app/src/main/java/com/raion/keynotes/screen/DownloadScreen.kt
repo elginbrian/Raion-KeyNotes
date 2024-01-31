@@ -55,7 +55,6 @@ import com.raion.keynotes.navigation.NavEnum
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DownloadScreen(
-    noteDAOViewModel: NoteDAOViewModel,
     navController: NavController,
     noteList: List<NoteClass>,
     userDetailList: List<String>,
@@ -63,7 +62,12 @@ fun DownloadScreen(
     getAPIData: (Boolean) -> Unit
 ){
     getAPIData(true)
-    var userNameSplit = userDetailList[0].split(" ")
+    var userNameSplit: List<String> = listOf("", "")
+    if(userDetailList[0].contains(" ")){
+        userNameSplit = userDetailList[0].split(" ")
+    } else {
+        userNameSplit = listOf(userDetailList[0],"")
+    }
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(30,30,30, 255)) {
         Scaffold(
@@ -152,6 +156,7 @@ fun DownloadScreen(
                                             Image(painter = painterResource(id = R.drawable.emptybox), contentDescription = "empty box", modifier = Modifier.fillMaxSize(0.9f))
                                         }
                                         Text(text = "You're currently don't have any notes", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                                        Spacer(modifier = Modifier.padding(60.dp))
                                     }
                                 }
 

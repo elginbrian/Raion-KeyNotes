@@ -2,6 +2,7 @@ package com.raion.keynotes.screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.raion.keynotes.R
+import com.raion.keynotes.component.NoteColorBar
 import com.raion.keynotes.component.TransparentTextField
 import com.raion.keynotes.model.NoteItem
 import com.raion.keynotes.navigation.NavEnum
@@ -104,7 +106,7 @@ fun CreateNewNoteScreen(
                                     postNote(Pair(newNoteTitle.value, newNoteDescription.value))
                                     navController.navigate(route = NavEnum.HomeScreen.name)
                                     context.recreate()
-                                    navController.navigate(route = NavEnum.HomeScreen.name)
+                                    Toast.makeText(context, "${newNoteTitle.value} saved", Toast.LENGTH_LONG).show()
                                            },
                             contentDescription = ""
                         )
@@ -174,220 +176,12 @@ fun CreateNewNoteScreen(
                         },
 
                         floatingActionButton = {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth(0.92f)
-                                    .height(55.dp),
-                                shape = RoundedCornerShape(20.dp),
-                                elevation = CardDefaults.cardElevation(8.dp),
-                                colors = CardDefaults.cardColors(Color(51, 47, 51))
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(start = 16.dp, end = 16.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "Note Color: ",
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = Color.White
-                                    )
-
-                                    Row(
-                                        horizontalArrangement = Arrangement.Start,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Card(
-                                            modifier = Modifier
-                                                .width(35.dp)
-                                                .height(35.dp)
-                                                .clickable {
-                                                    colorFlag.value = "1"
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorRed",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorGreen",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorBlue",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorViolet",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value + "\n#NoteColorRed"
-                                                },
-                                            shape = CircleShape,
-                                            colors = CardDefaults.cardColors(
-                                                Color(
-                                                    250,
-                                                    110,
-                                                    80
-                                                )
-                                            ),
-                                            border =
-                                            if (colorFlag.value == "1") {
-                                                BorderStroke(4.dp, Color.White)
-                                            } else {
-                                                null
-                                            }
-                                        ) {}
-
-                                        Spacer(modifier = Modifier.padding(5.dp))
-
-                                        Card(
-                                            modifier = Modifier
-                                                .width(35.dp)
-                                                .height(35.dp)
-                                                .clickable {
-                                                    colorFlag.value = "2"
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorRed",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorGreen",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorBlue",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorViolet",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value + "\n#NoteColorGreen"
-                                                },
-                                            shape = CircleShape,
-                                            colors = CardDefaults.cardColors(
-                                                Color(
-                                                    185,
-                                                    250,
-                                                    80
-                                                )
-                                            ),
-                                            border =
-                                            if (colorFlag.value == "2") {
-                                                BorderStroke(4.dp, Color.White)
-                                            } else {
-                                                null
-                                            }
-                                        ) {}
-
-                                        Spacer(modifier = Modifier.padding(5.dp))
-
-                                        Card(
-                                            modifier = Modifier
-                                                .width(35.dp)
-                                                .height(35.dp)
-                                                .clickable {
-                                                    colorFlag.value = "3"
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorRed",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorGreen",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorBlue",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorViolet",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value + "\n#NoteColorBlue"
-                                                },
-                                            shape = CircleShape,
-                                            colors = CardDefaults.cardColors(
-                                                Color(
-                                                    80,
-                                                    120,
-                                                    250
-                                                )
-                                            ),
-                                            border =
-                                            if (colorFlag.value == "3") {
-                                                BorderStroke(4.dp, Color.White)
-                                            } else {
-                                                null
-                                            }
-                                        ) {}
-
-                                        Spacer(modifier = Modifier.padding(5.dp))
-
-                                        Card(
-                                            modifier = Modifier
-                                                .width(35.dp)
-                                                .height(35.dp)
-                                                .clickable {
-                                                    colorFlag.value = "4"
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorRed",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorGreen",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorBlue",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value.replace(
-                                                            "#NoteColorViolet",
-                                                            "\b\b"
-                                                        )
-                                                    newNoteDescription.value =
-                                                        newNoteDescription.value + "\n#NoteColorViolet"
-                                                },
-                                            shape = CircleShape,
-                                            colors = CardDefaults.cardColors(
-                                                Color(
-                                                    170,
-                                                    80,
-                                                    250
-                                                )
-                                            ),
-                                            border =
-                                            if (colorFlag.value == "4") {
-                                                BorderStroke(4.dp, Color.White)
-                                            } else {
-                                                null
-                                            }
-                                        ) {}
-                                    }
-                                }
-                            }
+                            NoteColorBar(
+                                colorFlag = colorFlag.value,
+                                newNoteDescription = newNoteDescription.value,
+                                returnColorFlag = { colorFlag.value = it },
+                                returnNoteDescription = { newNoteDescription.value = it }
+                            )
                         }
                     )
                 }

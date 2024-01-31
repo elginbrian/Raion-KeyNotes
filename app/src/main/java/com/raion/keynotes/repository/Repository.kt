@@ -26,6 +26,7 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
     private val getUserDetailException = DataExceptionHandling<GetUserDetailResponse, Boolean, Exception>()
 
     fun getToken() = tokenDAO.getToken()
+    suspend fun deleteAllToken() = tokenDAO.deleteAll()
     suspend fun addToken(tokenId: String, timestamp: String) = tokenDAO.insert(TokenClass(tokenId = tokenId, timeStamp = timestamp))
     suspend fun retrieveToken(): String {
         val tokenClass = tokenDAO.getToken().firstOrNull()
