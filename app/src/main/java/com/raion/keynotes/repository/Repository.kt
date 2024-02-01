@@ -66,8 +66,8 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
 
     suspend fun postNoteRequest(title: String, description: String){
         val noteRequest = PostNoteRequest(title, description)
-        val response = api.postNote(request = noteRequest, token = retrieveToken())
         try{
+            val response = api.postNote(request = noteRequest, token = retrieveToken())
             if(!response.error){
                 Log.d("Request success", "Response: ${response.data}")
             } else {
@@ -94,8 +94,8 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
 
     suspend fun loginRequest(nim: String, password: String){
         val loginRequest = PostLoginRequest(nim, password)
-        val response = api.postLogin(request = loginRequest, token = retrieveToken())
         try {
+            val response = api.postLogin(request = loginRequest, token = retrieveToken())
             if(!response.error){
                 Log.d("Request success", "Response: ${response.data.token}")
                 tokenDAO.insert(TokenClass(tokenId = response.data.token, timeStamp = currentTime.toString()))
@@ -110,7 +110,6 @@ class RaionAPIRepository @Inject constructor(private val api: RaionAPI, private 
     suspend fun putNoteRequest(noteId: String, title: String, description: String){
         val putNoteRequest = PutNoteRequest(title, description)
         try {
-            Log.d("putNote", "Updating note with ID: $noteId, Title: $title, Description: $description")
             val response = api.putNote(noteId = noteId, request = putNoteRequest, token = retrieveToken())
             if(!response.error){
                 Log.d("Request success", "Response: ${response.data}")

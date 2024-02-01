@@ -42,8 +42,8 @@ fun NavHost(
     val coroutineScope         = rememberCoroutineScope()
 
     var downloadedNoteList     = NoteDAOViewModel.notelist.collectAsState().value
-    var isToken: TokenClass?   = RaionAPIViewModel.token.collectAsState().value
 
+    var isToken: TokenClass?   = RaionAPIViewModel.token.collectAsState().value
     var token: TokenClass      = isToken ?: TokenClass("","2006-04-22T12:00:00.000000")
     var tokenTimestamp         = token.timeStamp
     var hoursSinceLastLogin    = processHoursSinceLogin(tokenTimestamp)
